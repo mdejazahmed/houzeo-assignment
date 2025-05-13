@@ -1,227 +1,121 @@
-import axios from 'axios'
-import router from '@/router'
-import { useAuthStore } from '@/stores/auth'
-import { throttle, debounce } from 'lodash'
+import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
-// Request queue for throttling
-class RequestQueue {
-  constructor() {
-    this.queue = new Map()
-  }
-  
-  add(key, request) {
-    this.queue.set(key, request)
-  }
-  
-  get(key) {
-    return this.queue.get(key)
-  }
-  
-  clear(key) {
-    this.queue.delete(key)
-  }
-}
-
-// Global request queue
-const requestQueue = new RequestQueue()
-
-// Cancel Token
-let CancelToken = axios.CancelToken
-let source = CancelToken.source()
-
-// Axios instance
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+// Create axios instance
+ const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json'
   },
-  xsrfCookieName: 'csrftoken',
-  xsrfHeaderName: 'X-CSRFTOKEN',
-})
+});
 
-// Request Interceptor (add token, throttle, and debounce)
-api.interceptors.request.use(
-  (config) => {
-    // Add token if available
-    const { accessToken } = useAuthStore().getToken()
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`
-    }
-
-    // Check if request needs to be throttled
-    if (config.throttle) {
-      const key = `${config.url}${config.method}${JSON.stringify(config.params)}${JSON.stringify(config.data)}`
-      const existingRequest = requestQueue.get(key)
-      
-      if (existingRequest) {
-        // Cancel previous request
-        if (existingRequest.cancel) {
-          existingRequest.cancel()
-        }
-        // Update request in queue
-        requestQueue.add(key, config)
-        return config
-      }
-      
-      // Add new request to queue
-      requestQueue.add(key, config)
-    }
-
-    // Apply debounce if needed
-    if (config.debounce) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(config)
-        }, config.debounce)
-      })
-    }
-
-    return config
-  },
-  (error) => {
-    console.error('Request error:', error)
-    return Promise.reject(error)
-  }
-)
-
-// Response Interceptor (central error handler)
-api.interceptors.response.use(
-  (response) => {
-    // Clear throttled request from queue
-    if (response.config.throttle) {
-      const key = `${response.config.url}${response.config.method}${JSON.stringify(response.config.params)}${JSON.stringify(response.config.data)}`
-      requestQueue.clear(key)
-    }
-    return response
-  },
-  (error) => {
-    // Handle common errors
-    if (error.response) {
-      // Server responded with error
-      switch (error.response.status) {
-        case 401:
-          // Token expired or invalid
-          router.push('/auth/login')
-          break
-        case 403:
-          // Forbidden
-          throw new Error('Access denied')
-        case 429:
-          // Too many requests
-          throw new Error('Too many requests. Please try again later.')
-      }
-    } else if (error.request) {
-      // Request made but no response
-      throw new Error('No response from server')
-    } else {
-      // Something happened in setting up the request
-      throw new Error(error.message)
+// Request interceptor
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const authStore = useAuthStore();
+    const token = authStore.getToken;
+    
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     
-    // Clear throttled request from queue
-    if (error.config?.throttle) {
-      const key = `${error.config.url}${error.config.method}${JSON.stringify(error.config.params)}${JSON.stringify(error.config.data)}`
-      requestQueue.clear(key)
-    }
-    
-    return Promise.reject(error)
+    // Add any other request-specific headers here
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-)
-
-// Centralized Error Handler
-const errorHandler = (error) => {
-  // Log error details
-  console.error('API Error:', {
-    status: error.response?.status,
-    message: error.message,
-    data: error.response?.data
-  })
-
-  // Show error message to user
+);
+const formatErrorMessage = (error) => {
   if (error.response?.data?.message) {
-    alert(error.response.data.message)
-  } else if (error.message) {
-    alert(error.message)
+    return error.response.data.message;
   }
-}
+  return error.message || 'An error occurred';
+};
 
-// Main export function: Custom wrapper
-export default function request(
-  method,
-  url,
-  {
-    headers = {},
-    params = {},
-    data = {},
-    onSuccess = null,
-    onFailure = null,
-    onFinally = null,
-    responseType = 'json',
-    onUploadProgress = null,
-    onDownloadProgress = null,
-    isTokenRequired = true,
-    cancel = false,
-    baseURL = import.meta.env.VITE_API_BASE_URL,
-    throttle = false,
-    debounce = false,
-    retryCount = 0,
-    maxRetries = 3,
-  } = {}
-) {
-  const allowedMethods = ['get', 'post', 'patch', 'put', 'delete']
-  if (!allowedMethods.includes(method)) return `Method ${method} not allowed`
-  if (!url) return 'URL is required'
 
-  const config = {
-    method,
-    url,
-    headers: { ...headers },
-    params,
-    data,
-    responseType,
-    onUploadProgress,
-    onDownloadProgress,
-    baseURL,
-    throttle: throttle || false,
-    debounce: debounce || false,
-    retryCount: retryCount || 0,
-    maxRetries: maxRetries || 3,
-  }
-
-  if (cancel) {
-    source.cancel('Request cancelled by user.')
-    source = CancelToken.source()
-    config.cancelToken = source.token
-  }
-
-  return api(config)
-    .then((response) => {
-      if (onSuccess) onSuccess(response)
-      return response
-    })
-    .catch(async (error) => {
-      // Handle retry logic
-      if (error.config.retryCount < error.config.maxRetries) {
-        error.config.retryCount++
-        return request(
-          method,
-          url,
-          {
-            ...config,
-            retryCount: error.config.retryCount
+// Response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    try {
+    
+    } catch (err) {
+      // Log the error for debugging
+      console.error('API Error:', err);
+      
+      // If it's an authentication error
+      if (error.response?.status === 401) {
+        const authStore = useAuthStore();
+        authStore.logout();
+        window.location.href = '/login';
+      }// Response interceptor
+      axiosInstance.interceptors.response.use(
+        (response) => {
+          return response;
+        },
+        async (error) => {
+          // If there's no response from the server
+          if (!error.response) {
+            console.error('Network Error:', error.message);
+            throw new Error('Network error. Please check your internet connection and try again.');
           }
-        )
-      }
+      
+          const { status, data } = error.response;
+          const errorMessage = data?.message || error.message || 'An error occurred';
+          
+          // Handle specific status codes
+          switch (status) {
+            case 401: // Unauthorized
+              try {
+                const authStore = useAuthStore();
+                await authStore.logout();
+                // Use router.push instead of window.location for SPA navigation
+                window.location.href = '/login';
+              } catch (err) {
+                console.error('Logout failed:', err);
+              }
+              break;
+              
+            case 403: // Forbidden
+              console.error('Access Denied:', errorMessage);
+              break;
+              
+            case 404: // Not Found
+              console.error('Resource not found:', error.config.url);
+              break;
+              
+            case 429: // Too Many Requests
+              console.error('Rate limit exceeded. Please try again later.');
+              break;
+              
+            case 500: // Internal Server Error
+              console.error('Server error occurred. Please try again later.');
+              break;
+              
+            default:
+              console.error(`Error ${status}:`, errorMessage);
+          }
+          
+          // Return a rejected promise with the error
+          return Promise.reject({
+            message: errorMessage,
+            status,
+            data: data || null,
+            originalError: error
+          });
+        }
+      );
+      
+      // Throw the formatted error message
+      throw new Error(formatErrorMessage(error));
+    }
+  }
+);
 
-      if (onFailure) {
-        onFailure(error.response)
-      } else {
-        errorHandler(error)
-      }
-      throw error
-    })
-    .finally(() => {
-      if (onFinally) onFinally()
-    })
-}
+
+export default axiosInstance
