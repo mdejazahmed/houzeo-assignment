@@ -12,19 +12,8 @@ import { useUserStore } from '@/stores/user'
 import { useLoadingStore } from '@/stores/loading'
 import { useRoute } from 'vue-router'
 import {routes} from './routes'
-import {ROUTES} from './routeKeys'
-// Add default meta to all routes
-const addDefaultMeta = (routes) => {
-  return routes.map(route => ({
-    ...route,
-    meta: {
-      title: route.meta?.title || 'Default Title',
-      layout: route.meta?.layout || 'default',
-      requiresAuth: route.meta?.requiresAuth ?? true,
-      ...route.meta,
-    }
-  }))
-}
+import {ROUTES} from '@/constants/routeKeys'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +37,7 @@ router.onError((err, to) => {
 
 // Global Before Each Guard
 router.beforeEach(async (to, from, next) => {
+  console.log(to)
   const authStore = useAuthStore()
   const userStore = useUserStore()
   const loadingStore = useLoadingStore()
@@ -64,10 +54,10 @@ router.beforeEach(async (to, from, next) => {
       if (!authStore.isAuthenticated) {
         // Check auth status if not already authenticated
         const isAuthenticated = await authStore.checkAuth()
-        // if (!isAuthenticated && to.path !== ROUTES.LOGIN.path) {
-        //   next(ROUTES.LOGIN.path)
-        //   return
-        // }
+        if (!isAuthenticated && to.name !== ROUTES.LOGIN.name) {
+          next(ROUTES.LOGIN.name)
+          return
+        }
       }
     }
 
