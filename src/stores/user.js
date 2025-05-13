@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
+    user: JSON.parse(localStorage.getItem('user')) || {},
     roles: [],
     permissions: [],
     profile: null
@@ -18,22 +19,8 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
-    async fetchUserData() {
-      try {
-        // Replace with your actual API endpoint
-        const response = await fetch('/api/user/profile')
-        if (!response.ok) throw new Error('Failed to fetch user data')
-        
-        const data = await response.json()
-        this.roles = data.roles || []
-        this.permissions = data.permissions || []
-        this.profile = data.profile
-        
-        return data
-      } catch (error) {
-        console.error('Error fetching user data:', error)
-        throw error
-      }
+    setUser(user) {
+   localStorage.setItem('user', JSON.stringify(user))
     },
 
     updateProfile(profile) {
