@@ -15,9 +15,7 @@ import { createApp } from 'vue'
 
 // Styles
 import 'unfonts.css'
-import request from '@/plugins/axios'
 
 const app = createApp(App)
-app.config.globalProperties.$apiRequest = request
 registerPlugins(app)
 app.mount('#app')
