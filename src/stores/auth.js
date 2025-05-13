@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-
+import { useRouter } from 'vue-router'
+import { ROUTES } from '@/constants/routeKeys'
+const router = useRouter()
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('token') || null,
@@ -13,35 +15,11 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async login(credentials) {
-      try {
-        // Replace with your actual login API call
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(credentials),
-        })
-
-        const data = await response.json()
-        
-        if (response.ok) {
-          this.token = data.token
-          this.user = data.user
-          this.isAuthenticated = true
-          
-          // Store token in localStorage
-          localStorage.setItem('token', data.token)
-          
-          return true
-        }
-        
-        throw new Error(data.message || 'Login failed')
-      } catch (error) {
-        console.error('Login error:', error)
-        throw error
-      }
+    async setToken({accessToken, refreshToken}) {
+      localStorage.setItem('token', accessToken)
+      localStorage.setItem('refreshToken', refreshToken)
+      this.token = accessToken
+      this.isAuthenticated = true
     },
 
     logout() {
@@ -49,6 +27,9 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.isAuthenticated = false
       localStorage.removeItem('token')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('user')
+      router.push({name: ROUTES.LOGIN.name})
     },
 
     async checkAuth() {
@@ -56,29 +37,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = false
         return false
       }
-
-      try {
-        // Replace with your actual auth check API
-        const response = await fetch('/api/auth/check', {
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          this.user = data.user
-          this.isAuthenticated = true
-          return true
-        }
-
-        this.isAuthenticated = false
-        return false
-      } catch (error) {
-        console.error('Auth check error:', error)
-        this.isAuthenticated = false
-        return false
-      }
+      return true
     }
   },
 })
