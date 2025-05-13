@@ -1,7 +1,7 @@
 
 import authLayout from '@/layouts/auth.vue'
 import defaultLayout from '@/layouts/default.vue'
-import {ROUTES} from './routeKeys'
+import {ROUTES} from '@/constants/routeKeys'
 
 export const routes = [
     // Auth Routes
@@ -26,6 +26,16 @@ export const routes = [
           requiresAuth: true
         }
       },
+    {
+        name: ROUTES.PROJECT.name,
+        path: ROUTES.PROJECT.path,
+        component: () => import('@/pages/app/project.vue'),
+        meta: {
+          title: 'Project',
+          requiresAuth: true
+        }
+      },
+
     // Not Found Route
     {
     path: '/:catchAll(.*)',
