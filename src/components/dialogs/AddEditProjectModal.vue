@@ -1,0 +1,159 @@
+<template>
+  <v-navigation-drawer location="right" temporary width="800">
+    <v-card variant="flat">
+      <v-card-title class="d-flex align-center justify-space-between gap-2">
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="close"
+        ></v-btn>
+        <h4>{{ props.title }}</h4>
+        <v-btn
+          icon="mdi-delete"
+          variant="text"
+          size="small"
+          @click="deleteProject"
+        ></v-btn>
+      </v-card-title>
+      <v-card-text>
+        <v-form ref="formRef">
+          <div class="d-flex flex-column gap-4">
+            <v-text-field
+              v-model="form.name"
+              label="Project Name"
+              variant="underlined"
+              placeholder="Enter Project Name"
+              :rules="[requiredRule]"
+            ></v-text-field>
+            <div class="d-flex align-center gap-4">
+              <label for="addTeam" class="text-subtitle-2">Add Team</label>
+              <v-autocomplete
+                v-model="form.teamMembers"
+                :items="teamMembersList"
+                variant="underlined"
+                density="compact"
+                placeholder="Enter Name"
+                rounded
+                item-title="email"
+                return-object
+                multiple
+                hide-selected
+                @update:search="getTeamMembersList"
+                closable-chips
+                chips
+                :rules="[requiredArrayRule]"
+              >
+                <template v-slot:chip="{ props, item }">
+                  <UserChip :user="item.raw" v-bind="props" />
+                </template>
+              </v-autocomplete>
+            </div>
+            <div class="d-flex align-center gap-4">
+              <label for="deadline" class="text-subtitle-2">Created by</label>
+              <UserChip :user="user" />
+            </div>
+            <v-tabs v-model="tab">
+              <v-tab value="description">Description</v-tab>
+            </v-tabs>
+            <v-tabs-window v-model="tab">
+              <v-tabs-window-item value="description">
+                <v-textarea
+                  v-model="form.description"
+                  variant="outlined"
+                  rounded
+                  placeholder="Enter Description"
+                ></v-textarea>
+              </v-tabs-window-item>
+            </v-tabs-window>
+          </div>
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          color="primary"
+          variant="flat"
+          class="rounded-lg"
+          @click="submit"
+        >
+          {{ props.title }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-navigation-drawer>
+</template>
+<script setup>
+import { reactive } from "vue";
+import { GET_MEMBERS_LIST, CREATE_PROJECT,DELETE_PROJECT } from "@/constants/apis";
+import request from "@/plugins/axios";
+import UserChip from "@/components/chips/UserChip.vue";
+import { ref } from "vue";
+import { useUserStore } from "@/stores/user";
+import { requiredRule, requiredArrayRule } from "@/utils/formRules";
+
+const formRef = ref(null);
+
+const { user } = useUserStore();
+const props = defineProps({
+  title: String,
+  data: Object,
+});
+console.log(props,'props');
+
+const form = reactive({
+  name: "",
+  teamMembers:  [],
+  description:  "",
+});
+watch(() => props.data, () => {
+  if(props.data){
+    form.name = props.data.project_name || "";
+    form.teamMembers = props.data.team_members || [];
+    form.description = props.data.description || "";
+  }
+});
+const tab = ref(null);
+const teamMembersList = ref([]);
+const getTeamMembersList = async (search) => {
+  try {
+    const res = await request.get(GET_MEMBERS_LIST);
+    teamMembersList.value = res.data.detail;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const emit = defineEmits(["close"]);
+const close = () => {
+  
+  emit("close");
+};
+const submit = async () => {
+  if (!formRef.value.validate()) {
+    return;
+  }
+  try {
+    const data = {
+      ...props.data,
+      project_name: form.name,
+      team_members: form.teamMembers.map((item) => item.id),
+      created_by: user.id,
+      description: form.description,
+    };
+    const res = await request.post(CREATE_PROJECT, data);
+    emit("close");
+    emit("success");
+  } catch (error) {
+    console.log(error);
+  }
+};
+const deleteProject = async () => {
+  try {
+    const res = await request.delete(DELETE_PROJECT.replace(":project_id", props.data.id));
+    emit("close");
+    emit("success");
+  } catch (error) {
+    console.log(error);
+  }
+};
+</script>
