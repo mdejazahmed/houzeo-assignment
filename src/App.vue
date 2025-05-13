@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <component :is="layout" >
+    <component :is="layout" theme="dark">
     <router-view />
     </component>
   </v-app>
@@ -9,9 +9,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import defaultLayout from '@/layouts/default.vue'
+
 const route = useRoute()
 const layout = computed(() => {
-  return route.meta.layout || defaultLayout
+  return route.meta.layout || "main"
 })
+
+
+
+
 </script>
