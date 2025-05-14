@@ -8,12 +8,16 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddEditGroupModal: typeof import('./src/components/dialogs/AddEditGroupModal.vue')['default']
     AddEditProjectModal: typeof import('./src/components/dialogs/AddEditProjectModal.vue')['default']
+    AddEditTask: typeof import('./src/components/dialogs/AddEditTask.vue')['default']
     AddProject: typeof import('./src/components/dialogs/AddProject.vue')['default']
     GoogleLogin: typeof import('./src/components/googleLogin/GoogleLogin.vue')['default']
+    GroupCard: typeof import('./src/components/cards/GroupCard.vue')['default']
     ProjectCard: typeof import('./src/components/cards/ProjectCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TaskCard: typeof import('./src/components/cards/TaskCard.vue')['default']
     ToggleTheme: typeof import('./src/components/themeToggle/ToggleTheme.vue')['default']
     UserChip: typeof import('./src/components/chips/UserChip.vue')['default']
   }
