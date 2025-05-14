@@ -31,6 +31,10 @@ export default createVuetify({
           success: '#4CAF50', 
           warning: '#FFC107',
           text: '#000000',
+          label: '#424242',
+          lowPriority: '#7CB2C8',
+          mediumPriority: '#FFA05B',
+          highPriority: '#FF5B5B',
           
         },
       },
@@ -46,8 +50,11 @@ export default createVuetify({
           info: '#018786',
           success: '#3DDC84',
           warning: '#FFB74D',
-          text: '#FFFFFF',
-          
+          text: '#E0E0E0',
+          label: '#E0E0E0',
+          lowPriority: '#9AC5D9',    // Lighter muted blue
+          mediumPriority: '#FFB88C', // Lighter orange
+          highPriority: '#FF8A80'  
         },
       },
     },
