@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { useRouter } from 'vue-router'
 import { ROUTES } from '@/constants/routeKeys'
-const router = useRouter()
+
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: localStorage.getItem('token') || null,
@@ -15,7 +15,7 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    async setToken({accessToken, refreshToken}) {
+     setToken({accessToken, refreshToken}) {
       localStorage.setItem('token', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
       this.token = accessToken
@@ -29,10 +29,10 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('token')
       localStorage.removeItem('refreshToken')
       localStorage.removeItem('user')
-      router.push({name: ROUTES.LOGIN.name})
+
     },
 
-    async checkAuth() {
+    checkAuth() {
       if (!this.token) {
         this.isAuthenticated = false
         return false
