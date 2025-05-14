@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex align-center justify-space-between gap-2">
-      <div>
+      <div class="text-subtitle-2">
         {{ props.project.project_name }}
       </div>
       <v-btn
@@ -29,12 +29,6 @@
             rounded
           ></v-progress-linear>
           <span class="text-subtitle-2">10%</span>
-          <v-btn
-            icon="mdi-pencile"
-            variant="text"
-            size="small"
-            @click="emit('edit', props.project)"
-          ></v-btn>
         </div>
       </v-card-title>
       <v-card-text>
