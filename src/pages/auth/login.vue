@@ -1,5 +1,5 @@
 <template>
-        <v-card class="elevation-12">
+        <v-card class="elevation-12" width="400">
           <v-card-title class="text-center">
             <h2>Login</h2>
           </v-card-title>
@@ -7,7 +7,7 @@
             <p>Enter your email address to login</p>
           </v-card-subtitle>
           <v-card-text>
-            <v-form @submit.prevent="login">
+            <v-form @submit.prevent="login" ref="loginForm"> 
               <v-text-field
                 density="compact"
                 v-model="email"
@@ -20,7 +20,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions class="text-center">
-            <v-btn color="primary" block type="submit" :disabled="!email">
+            <v-btn color="primary" variant="flat" block type="submit" @click="login" :disabled="!email" :loading="loading">
               Login
             </v-btn>
           </v-card-actions>
@@ -42,13 +42,16 @@ const userStore = useUserStore()
 const router = useRouter()
 
 const email = ref('')
+const loading = ref(false)
+
+const loginForm = ref(null)
 
 const login = async () => {
-  if(!email.value){
-    return
-  }
+  const {valid} = await loginForm.value.validate()
+  if(!valid) return
     
 try {
+  loading.value = true
   const {data} = await request.post(LOGIN, {
       email: email.value,
       company:'1e179299-844d-435a-abc3-60edab2ece64'
@@ -58,6 +61,8 @@ try {
     router.push({name: ROUTES.HOME.name})
 } catch (error) {
   console.log(error)
+} finally {
+  loading.value = false
 }
     // Make API call only if form is valid
    
