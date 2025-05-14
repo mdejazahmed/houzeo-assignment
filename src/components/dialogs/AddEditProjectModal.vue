@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer location="right" temporary width="800">
     <v-card variant="flat">
-      <v-card-title class="d-flex align-center justify-space-between gap-2">
+      <v-card-title class="d-flex align-center gap-2">
         <v-btn
           icon="mdi-close"
           variant="text"
@@ -9,12 +9,6 @@
           @click="close"
         ></v-btn>
         <h4>{{ props.title }}</h4>
-        <v-btn
-          icon="mdi-delete"
-          variant="text"
-          size="small"
-          @click="deleteProject"
-        ></v-btn>
       </v-card-title>
       <v-card-text>
         <v-form ref="formRef">
@@ -98,7 +92,6 @@ const props = defineProps({
   title: String,
   data: Object,
 });
-console.log(props,'props');
 
 const form = reactive({
   name: "",
@@ -125,11 +118,12 @@ const getTeamMembersList = async (search) => {
 
 const emit = defineEmits(["close"]);
 const close = () => {
-  
+  formRef.value.reset();
   emit("close");
 };
 const submit = async () => {
-  if (!formRef.value.validate()) {
+ const {valid} = await formRef.value.validate();
+  if (!valid) {
     return;
   }
   try {
@@ -147,13 +141,5 @@ const submit = async () => {
     console.log(error);
   }
 };
-const deleteProject = async () => {
-  try {
-    const res = await request.delete(DELETE_PROJECT.replace(":project_id", props.data.id));
-    emit("close");
-    emit("success");
-  } catch (error) {
-    console.log(error);
-  }
-};
+
 </script>
