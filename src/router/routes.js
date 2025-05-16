@@ -35,7 +35,27 @@ export const routes = [
           requiresAuth: true
         }
       },
-
+      // Weekly Plan Routes
+    {
+        name: ROUTES.WEEKLY_PLAN.name,
+        path: ROUTES.WEEKLY_PLAN.path,
+        component: () => import('@/pages/app/weeklyPlan.vue'),
+        meta: {
+          title: 'Weekly Plan',
+          requiresAuth: true,
+          layout: defaultLayout,
+        }
+      },
+    {
+        name: ROUTES.CREATE_WEEKLY_PLAN.name,
+        path: ROUTES.CREATE_WEEKLY_PLAN.path,
+        component: () => import('@/pages/app/createWeeklyPlan.vue'),
+        meta: {
+          title: 'Create Weekly Plan',
+          requiresAuth: true,
+        
+        }
+      },
     // Not Found Route
     {
     path: '/:catchAll(.*)',
