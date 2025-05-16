@@ -1,9 +1,9 @@
 <template>
   <v-switch
-    v-model="isDark"
+    :model-value="isDark"
     hide-details
     density="compact"
-    @change="()=>toggleTheme()"
+    @change="toggleTheme"
   ></v-switch>
 </template>
 
@@ -16,10 +16,11 @@ const themeStore = useThemeStore()
 const theme = useTheme()
 
 // Use computed to properly track changes
-const isDark = computed({
-  get: () => themeStore.isDark,
-  set: (value) => themeStore.toggleTheme()
-})
+const isDark = computed(() => themeStore.isDark)
+
+const toggleTheme = () => {
+  themeStore.toggleTheme()
+}
 
 // Watch for changes and update Vuetify theme
 watch(isDark, (newVal) => {
