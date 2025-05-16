@@ -1,18 +1,16 @@
 <template>
   <v-container class="fill-height" fluid>
     <v-row>
-      <v-col cols="6" class="d-flex align-center justify-center">
-        <div class="d-flex flex-column align-center">
-          <img src="@/assets/login.svg" max-width="400" class="mx-auto" />
+      <v-col cols="12" sm="6" md="7" class="d-flex flex-column">
+          <img src="@/assets/login.svg" width="50%" class="mx-auto" />
           <h2>Lorem Ipsum Dolor Amet, Ipsum dolor lorem amet.</h2>
           <p>
             Lorem Ipsum Dolor Amet, Ipsum dolor lorem amet, Lorem Ipsum Dolor
             Amet, Ipsum dolor lorem amet, Lorem Ipsum Dolor Amet, Ipsum dolor
             lorem amet.
           </p>
-        </div>
       </v-col>
-      <v-col cols="6" class="d-flex align-center justify-center">
+      <v-col cols="12" sm="6" md="5">
         <router-view />
       </v-col>
     </v-row>
