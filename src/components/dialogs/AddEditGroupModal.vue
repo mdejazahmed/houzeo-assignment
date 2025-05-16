@@ -14,10 +14,12 @@
           <v-form ref="formRef">
             <div class="d-flex flex-column gap-4">
               <v-text-field
+              autofocus
                 v-model="form.name"
                 variant="underlined"
                 placeholder="Enter Group Name"
                 :rules="[requiredRule]"
+                   @keypress.enter.prevent="submit"
               ></v-text-field>
               <v-tabs v-model="tab">
                 <v-tab value="description">Description</v-tab>
@@ -66,24 +68,25 @@ const route = useRoute();
   });
   
   const form = reactive({
-    name: "",
-    description:  "",
+    name: null,
+    description:  null,
   });
   watch(() => props.data, () => {
     if(props.data){
-      form.name = props.data.project_name || "";
-      form.description = props.data.description || "";
+      form.name = props.data.project_name || null;
+      form.description = props.data.description || null;
     }
   });
   const tab = ref(null);
   
   const emit = defineEmits(["close"]);
   const close = () => {
-    
+    formRef.value.reset();
     emit("close");
   };
   const submit = async () => {
-    if (!formRef.value.validate()) {
+    const { valid } = await formRef.value.validate();
+    if (!valid) {
       return;
     }
     try {
