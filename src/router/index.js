@@ -37,7 +37,6 @@ router.onError((err, to) => {
 
 // Global Before Each Guard
 router.beforeEach(async (to, from, next) => {
-  console.log(to)
   const authStore = useAuthStore()
   const userStore = useUserStore()
   const loadingStore = useLoadingStore()
@@ -79,17 +78,29 @@ router.beforeEach(async (to, from, next) => {
       }
     }
 
-    // 5. Handle public routes
+    // 5. Handle public routes and prevent authenticated users from accessing login/register
     if (!requiresAuth && authStore.isAuthenticated) {
-      // Redirect to dashboard if user is already logged in
-      next('/dashboard')
+      // Get the current route name
+      const currentRouteName = to.name
+      // Get the route keys
+      const { LOGIN, REGISTER } = ROUTES
+      
+      // If user is trying to access login or register page while authenticated
+      if (currentRouteName === LOGIN.name || currentRouteName === REGISTER.name) {
+        // Redirect to dashboard
+        next(from)
+        return
+      }
+      
+      // For other public routes, allow access
+      next()
       return
     }
 
     // 6. Set page title
-    if (to.meta.title) {
-      document.title = to.meta.title
-    }
+    const defaultTitle = 'CodeNicely Core'
+    const pageName = to.meta.title || to.name
+    document.title = pageName ? `${pageName} | ${defaultTitle}` : defaultTitle
 
     // 7. Preload data if needed
     if (to.meta.preloadData) {
