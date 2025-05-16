@@ -15,6 +15,7 @@
           <div class="d-flex flex-column gap-4">
             <v-text-field
               v-model="form.name"
+              @keypress.enter.prevent="submit"
               label="Project Name"
               variant="underlined"
               placeholder="Enter Project Name"
@@ -38,9 +39,9 @@
                 chips
                 :rules="[requiredArrayRule]"
               >
-                <template v-slot:chip="{ props, item }">
-                  <UserChip :user="item.raw" v-bind="props" />
-                </template>
+                <!-- <template v-slot:chip="{ props, item }">
+                  <v-chip  v-bind="props" />
+                </template> -->
               </v-autocomplete>
             </div>
             <div class="d-flex align-center gap-4">
@@ -54,6 +55,7 @@
               <v-tabs-window-item value="description">
                 <v-textarea
                   v-model="form.description"
+                  @keypress.enter.prevent="submit"
                   variant="outlined"
                   rounded
                   placeholder="Enter Description"
@@ -68,6 +70,7 @@
           color="primary"
           variant="flat"
           class="rounded-lg"
+          type="submit"
           @click="submit"
         >
           {{ props.title }}
@@ -121,7 +124,8 @@ const close = () => {
   formRef.value.reset();
   emit("close");
 };
-const submit = async () => {
+const submit = async (e) => {
+
  const {valid} = await formRef.value.validate();
   if (!valid) {
     return;
