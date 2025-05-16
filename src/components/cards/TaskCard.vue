@@ -17,7 +17,7 @@
       </div>
       <div class="d-flex align-center gap-2 mt-2">
         <v-chip
-          :text="task.due_date"
+          :text="date.format(task.due_date, 'fullDateWithWeekday')"
           prepend-icon="mdi-calendar-blank-outline"
           label
           density="compact"
@@ -55,10 +55,12 @@
 </template>
 
 <script setup>
+import { useDate } from 'vuetify'
 const {task} = defineProps({
   task: {
     type: Object,
     required: true,
   },
 });
+const date = useDate(task.due_date);
 </script>
