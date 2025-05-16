@@ -1,5 +1,5 @@
 <template>
-        <v-card class="elevation-12" width="400">
+        <v-card class="elevation-12" max-width="400">
           <v-card-title class="text-center">
             <h2>Login</h2>
           </v-card-title>

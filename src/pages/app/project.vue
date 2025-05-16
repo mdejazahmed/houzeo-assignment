@@ -1,13 +1,13 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between">
-      <div>
+    <v-row class="d-flex justify-space-between">
+      <v-col cols="12" sm="6" md="4" lg="6">
         <h5 class="text-h5 font-weight-bold">{{ project.project_name }} 🚀</h5>
         <p class="text-subtitle-2 text-medium-emphasis">
           {{ project.description }}
         </p>
-      </div>
-      <div class="d-flex align-center gap-2">
+      </v-col>
+      <v-col cols="12" sm="6" md="4" lg="6" class="d-flex align-center justify-end gap-2">
         <v-btn
           icon="mdi-magnify"
           variant="outlined"
@@ -24,8 +24,9 @@
           @click="addGroupDialog.show = true"
           >Add Group</v-btn
         >
-      </div>
-    </div>
+      </v-col>
+    </v-row>
+
     <v-row>
       <v-col
         v-for="group in project.project_groups"

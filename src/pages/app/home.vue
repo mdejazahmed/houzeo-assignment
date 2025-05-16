@@ -1,20 +1,19 @@
 <template>
-  <div>
-    <div class="d-flex justify-space-between">
-      <div>
+  <v-container>
+    <v-row>
+      <v-col cols="12" sm="6" md="4" lg="6">
         <h5 class="text-h5">Hello, Tarun 👋</h5>
         <p class="text-subtitle-2 text-medium-emphasis">
           Keep it up and complete today’s tasks to achieve the highest streak.
         </p>
-      </div>
-      <div class="d-flex align-center gap-2">
+      </v-col>
+      <v-col cols="12" sm="6" md="4" lg="6" class="d-flex align-center justify-end gap-2">
         <v-btn
           icon="mdi-magnify"
           variant="outlined"
           color="primary"
           size="small"
         ></v-btn>
-        <v-btn variant="outlined" color="primary" rounded>My Activities</v-btn>
         <v-btn
           variant="flat"
           color="primary"
@@ -22,8 +21,8 @@
           @click="createProject"
           >Add Project</v-btn
         >
-      </div>
-    </div>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col
         v-for="project in projects"
@@ -45,7 +44,7 @@
     :data="addProjectDialog.data"
       @success="getProjectsList"
     />
-  </div>
+  </v-container>
 </template>
 
 <script setup>
