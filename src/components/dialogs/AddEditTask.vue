@@ -1,27 +1,35 @@
 <script setup>
-import { ref,reactive } from "vue";
+import { ref, reactive } from "vue";
 import { requiredRule } from "@/utils/formRules";
-import { CREATE_TASK,GET_PROJECT_TEAMS } from "@/constants/apis";
+import { CREATE_TASK, GET_PROJECT_TEAMS } from "@/constants/apis";
 import request from "@/plugins/axios";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const { group_id } = defineProps({
+const { group_id, task } = defineProps({
   group_id: {
+    type: String,
+    required: true,
+  },
+  task: {
+    type: Object,
+    required: false,
+  },
+  project_id: {
     type: String,
     required: true,
   },
 });
 const formRef = ref(null);
 const loading = ref(false);
-const emit = defineEmits(["success","close"]);
+const emit = defineEmits(["success", "close"]);
 
 const taskForm = reactive({
-  task: "",
-  task_priority: "",
-  assignee: null,
-  due_date: "",
-  duration: "",
+  task: task?.task || "",
+  task_priority: task?.task_priority.text || "",
+  assignee: task?.assignees || null,
+  due_date: task?.due_date || "",
+  duration: task?.duration || "",
 });
 const priorities = ref([
   {
@@ -65,7 +73,7 @@ const durations = ref([
 const getAssigneesList = async () => {
   try {
     const res = await request.get(
-      GET_PROJECT_TEAMS.replace(":project_id", route.params.project_id)
+      GET_PROJECT_TEAMS.replace(":project_id", project_id)
     );
     assigneesList.value = res.data?.detail;
   } catch (error) {
@@ -73,10 +81,10 @@ const getAssigneesList = async () => {
   }
 };
 
-const addTask = async () => {
+const addEditTask = async () => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
-  loading.value=true;
+  loading.value = true;
   const data = {
     assignees: taskForm.assignee?.id,
     project_group: group_id,
@@ -85,32 +93,31 @@ const addTask = async () => {
     task_priority: taskForm.task_priority,
     duration: taskForm.duration,
   };
+  if(task?.id){
+    data.id = task?.id;
+  }
   try {
-    const res=await request.post(CREATE_TASK, data);
+    const res = await request.post(CREATE_TASK, data);
     handleClose();
     emit("success");
   } catch (error) {
     console.log(error);
-  }finally{
-    loading.value=false;
+  } finally {
+    loading.value = false;
   }
 };
 const handleClose = () => {
-    formRef.value.reset()
+  formRef.value.reset();
   emit("close");
 };
 </script>
 
 <template>
-  <v-card
-    class="rounded-lg"
-    variant="outlined"
-    border="dashed"
-  >
+  <v-card class="rounded-lg" variant="outlined" border="dashed">
     <v-card-title
       class="d-flex align-center justify-space-between gap-2 bg-background"
     >
-      <h5>Add a task</h5>
+      <h5>{{ task?.id ? 'Edit Task' : 'Add a task' }}</h5>
       <v-btn
         icon="mdi-close"
         variant="text"
@@ -120,39 +127,45 @@ const handleClose = () => {
     </v-card-title>
     <v-divider class="border-dashed"></v-divider>
     <v-card-text>
-      <v-form ref="formRef" @submit.prevent="addTask" >
+      <v-form
+        ref="formRef"
+        @submit.prevent="addEditTask"
+        class="d-flex flex-column gap-4"
+      >
         <v-text-field
           v-model="taskForm.task"
           variant="underlined"
           placeholder="Enter Task Name"
+          @keypress.enter.prevent="addEditTask"
           :rules="[requiredRule]"
         ></v-text-field>
-        <div class="d-flex align-center gap-4">
-          <label for="priority" class="text-subtitle-2">
+        <div class="d-flex gap-4">
+          <label for="priority" class="text-subtitle-2 w-10">
             Select priority
           </label>
-          <v-chip-group
+          <v-radio-group
             v-model="taskForm.task_priority"
-            mandatory
             :rules="[requiredRule]"
           >
-            <v-chip
-              v-for="priority in priorities"
-              :key="priority.value"
-              :text="priority.text"
-              :value="priority.value"
-              label
-              :variant="
-                taskForm.task_priority == priority.value ? 'flat' : 'outlined'
-              "
-              :color="priority.color"
-              :prepend-icon="priority.icon"
-              density="compact"
-            ></v-chip>
-          </v-chip-group>
+            <v-chip-group v-model="taskForm.task_priority" mandatory>
+              <v-chip
+                v-for="priority in priorities"
+                :key="priority.value"
+                :text="priority.text"
+                :value="priority.value"
+                label
+                :variant="
+                  taskForm.task_priority == priority.value ? 'flat' : 'outlined'
+                "
+                :color="priority.color"
+                :prepend-icon="priority.icon"
+                density="compact"
+              ></v-chip>
+            </v-chip-group>
+          </v-radio-group>
         </div>
-        <div class="d-flex align-center gap-4">
-          <label for="assignee" class="text-subtitle-2"> Assignee </label>
+        <div class="d-flex gap-4">
+          <label for="assignee" class="text-subtitle-2 w-10"> Assignee </label>
           <v-autocomplete
             v-model="taskForm.assignee"
             :items="assigneesList"
@@ -173,35 +186,43 @@ const handleClose = () => {
             </template>
           </v-autocomplete>
         </div>
-        <div class="d-flex align-center gap-4">
-          <label for="priority" class="text-subtitle-2"> Due Date </label>
+        <div class="d-flex gap-4">
+          <label for="priority" class="text-subtitle-2 w-10"> Due Date </label>
           <input type="date" v-model="taskForm.due_date" />
         </div>
-        <div class="d-flex align-center gap-4">
-          <label for="priority" class="text-subtitle-2"> Duration </label>
-          <v-chip-group
-            v-model="taskForm.duration"
-            mandatory
-            :rules="[requiredRule]"
-          >
-            <v-chip
-              v-for="duration in durations"
-              :key="duration.value"
-              :text="duration.text"
-              :value="duration.value"
-              :variant="
-                duration.value == taskForm.duration ? 'flat' : 'outlined'
-              "
-              color="primary"
-              density="compact"
-            ></v-chip>
-          </v-chip-group>
+        <div class="d-flex gap-4">
+          <label for="priority" class="text-subtitle-2 w-10"> Duration </label>
+          <v-radio-group v-model="taskForm.duration" :rules="[requiredRule]">
+            <v-chip-group
+              v-model="taskForm.duration"
+              mandatory
+              :rules="[requiredRule]"
+            >
+              <v-chip
+                v-for="duration in durations"
+                :key="duration.value"
+                :text="duration.text"
+                :value="duration.value"
+                :variant="
+                  duration.value == taskForm.duration ? 'flat' : 'outlined'
+                "
+                color="primary"
+                density="compact"
+              ></v-chip>
+            </v-chip-group>
+          </v-radio-group>
         </div>
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn variant="flat" color="primary" class="rounded-lg" type="submit" @click="addTask" :loading="loading"
-        >+ Add Task</v-btn
+      <v-btn
+        variant="flat"
+        color="primary"
+        class="rounded-lg"
+        type="submit"
+        @click="addEditTask"
+        :loading="loading"
+        >{{ task?.id ? 'Save' : 'Add Task' }}</v-btn
       >
       <v-btn
         variant="outlined"
@@ -213,3 +234,8 @@ const handleClose = () => {
     </v-card-actions>
   </v-card>
 </template>
+<style scoped>
+.w-10 {
+  width: 10%;
+}
+</style>
