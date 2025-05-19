@@ -66,7 +66,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           </v-avatar>
         </div>
       </div>
-      <div class="d-flex align-center gap-2 mt-2">
+      <div class="d-flex align-center flex-wrap gap-2 mt-2">
         <v-chip
           border="thin dashed"
           :text="date.format(task.due_date, 'fullDateWithWeekday')"
@@ -97,6 +97,19 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
             label
             density="compact"
             :color="task.task_priority.color"
+            variant="flat"
+            class="border-dashed text-white"
+          >
+          </v-chip>
+        </div>
+        <div class="d-flex align-center gap-2" v-if="task.project_group">
+          <label for="priority" class="text-label"> Group: </label>
+          <v-chip
+            :text="task.project_group?.project_group_name"
+            prepend-icon="mdi-account-group-outline"
+            label
+            density="compact"
+            color="purple"
             variant="flat"
             class="border-dashed text-white"
           >
