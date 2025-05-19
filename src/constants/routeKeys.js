@@ -12,9 +12,9 @@ export const ROUTES = {
       name: "project",
       path: "/project/:project_id",
     },  
-    WEEKLY_PLAN: {
-      name: "weekly_plan",
-      path: "/weekly_plan",
+    WEEKLY_PLANS: {
+      name: "weekly_plans",
+      path: "/weekly_plans",
     },
     CREATE_WEEKLY_PLAN: {
       name: "create_weekly_plan",

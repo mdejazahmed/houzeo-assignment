@@ -59,9 +59,9 @@ const navItems = [
     value: ROUTES.HOME.name,
   },
   {
-    title: "Weekly Plan",
+    title: "Weekly Plans",
     icon: "mdi-calendar-week-outline",
-    value: ROUTES.WEEKLY_PLAN.name,
+    value: ROUTES.WEEKLY_PLANS.name,
   },
 ];
 </script>

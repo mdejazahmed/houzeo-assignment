@@ -37,9 +37,9 @@ export const routes = [
       },
       // Weekly Plan Routes
     {
-        name: ROUTES.WEEKLY_PLAN.name,
-        path: ROUTES.WEEKLY_PLAN.path,
-        component: () => import('@/pages/app/weeklyPlan.vue'),
+        name: ROUTES.WEEKLY_PLANS.name,
+        path: ROUTES.WEEKLY_PLANS.path,
+        component: () => import('@/pages/app/weeklyPlans.vue'),
         meta: {
           title: 'Weekly Plan',
           requiresAuth: true,
