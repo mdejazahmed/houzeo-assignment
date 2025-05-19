@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import request from "@/plugins/axios";
-import { GET_WEEKLY_PLAN_TABS, GET_WEEKLY_PLAN_DATA } from "@/constants/apis";
+import { GET_WEEKLY_PLAN_TABS, GET_WEEKLY_PLAN_LIST } from "@/constants/apis";
 import { ROUTES } from "@/constants/routeKeys";
 const route = useRoute();
 const router = useRouter();
@@ -48,7 +48,7 @@ const getWeeklyPlanTabs = async () => {
 
 const getWeeklyPlanData = async () => {
   try {
-    const res = await request.get(GET_WEEKLY_PLAN_DATA, {
+    const res = await request.get(GET_WEEKLY_PLAN_LIST, {
       params: {
         plan_tabs: activeTab.value,
       },
