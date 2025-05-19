@@ -30,7 +30,7 @@
         cols="12"
         sm="6"
         md="4"
-        lg="3"
+        lg="4"
       >
         <ProjectCard :project="project" @edit="editProject" />
       </v-col>
@@ -62,6 +62,7 @@ const addProjectDialog = reactive({
 const createProject = () => {
   addProjectDialog.show = true;
   addProjectDialog.title = "Create Project";
+  addProjectDialog.data = {};
 };
 const projects = ref([]);
 const getProjectsList = async () => {
