@@ -21,7 +21,7 @@ declare module 'vue-router/auto-routes' {
     '/app/createWeeklyPlan': RouteRecordInfo<'/app/createWeeklyPlan', '/app/createWeeklyPlan', Record<never, never>, Record<never, never>>,
     '/app/home': RouteRecordInfo<'/app/home', '/app/home', Record<never, never>, Record<never, never>>,
     '/app/project': RouteRecordInfo<'/app/project', '/app/project', Record<never, never>, Record<never, never>>,
-    '/app/weeklyPlan': RouteRecordInfo<'/app/weeklyPlan', '/app/weeklyPlan', Record<never, never>, Record<never, never>>,
+    '/app/weeklyPlans': RouteRecordInfo<'/app/weeklyPlans', '/app/weeklyPlans', Record<never, never>, Record<never, never>>,
     '/auth/login': RouteRecordInfo<'/auth/login', '/auth/login', Record<never, never>, Record<never, never>>,
     '/not-found': RouteRecordInfo<'/not-found', '/not-found', Record<never, never>, Record<never, never>>,
   }
