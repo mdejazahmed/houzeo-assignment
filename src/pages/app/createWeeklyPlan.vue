@@ -5,6 +5,8 @@ import {
   GET_PROJECTS_LIST,
   GET_PROJECT_PENDING_TASKS,
   GET_WEEKLY_PLAN_DETAILS,
+  MOVE_TASK,
+  REMOVE_TASK,
 } from "@/constants/apis";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
@@ -73,36 +75,56 @@ onMounted(async () => {
   await getPendingTasks(selectedProject.value);
   getWeeklyPlanDetails();
 });
-const moveTask = async ({weekly_plan_id, task_id, group_id, project_id}) => {
+const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
   moveTaskLoading.value = true;
- try {
-    const res = await request.post(MOVE_TASK, {
+  try {
+    const res = await request.patch(MOVE_TASK, {
       weekly_plan_id,
       task_id,
       group_id,
       project_id,
     });
+    // remove task from pending tasks
+    const moveItemGroupIndex=groups.value.findIndex((group)=>group.id===group_id)
+    const moveItemIndex=groups.value[moveItemGroupIndex].pending_tasks.findIndex((task)=>task.id===task_id)
+    groups.value[moveItemGroupIndex].pending_tasks.splice(moveItemIndex,1)
     getWeeklyPlanDetails();
   } catch (error) {
     console.log(error);
-  }finally{
+  } finally {
     moveTaskLoading.value = false;
   }
 };
-const removeTask = async ({weekly_plan_id, task_id, group_id, project_id}) => {
+const removeTask = async ({
+  weekly_plan_id,
+  task_id,
+  group_id,
+  project_id,
+}) => {
   removeTaskLoading.value = true;
- try {
-    const res = await request.post(REMOVE_TASK, {
+  try {
+    const res = await request.patch(REMOVE_TASK, {
       weekly_plan_id,
       task_id,
       group_id,
       project_id,
     });
+const removedTask=res.data?.detail.task
+    // remove task from weekly plan
+    const projectIndex=weeklyPlan.value.projects.findIndex((project)=>project.project_id===project_id)
+    const taskIndex=weeklyPlan.value.projects[projectIndex].tasks.findIndex((task)=>task.id===task_id)
+   weeklyPlan.value.projects[projectIndex].tasks.splice(taskIndex,1)
+    // add task to pending tasks
+    if(res.data?.detail.project.project_id==selectedProject.value.id){
+      const groupIndex=groups.value.findIndex((group)=>group.id===group_id)
+      groups.value[groupIndex].pending_tasks.push(removedTask)
+    }
+    
+    
     getWeeklyPlanDetails();
   } catch (error) {
     console.log(error);
-  }
-  finally{
+  } finally {
     removeTaskLoading.value = false;
   }
 };
@@ -160,13 +182,20 @@ const removeTask = async ({weekly_plan_id, task_id, group_id, project_id}) => {
               >
                 <template #actions="{ task }">
                   <v-btn
-                  :loading="moveTaskLoading"
-                  :disabled="moveTaskLoading"
+                    :loading="moveTaskLoading"
+                    :disabled="moveTaskLoading"
                     variant="flat"
                     size="small"
                     rounded="lg"
                     color="primary"
-                    @click="moveTask({weekly_plan_id: weeklyPlan.id, task_id: task.id, group_id: group.id, project_id: selectedProject.id})"
+                    @click="
+                      moveTask({
+                        weekly_plan_id: route.params.weekly_plan_id,
+                        task_id: task.id,
+                        group_id: group.id,
+                        project_id: selectedProject?.id,
+                      })
+                    "
                     >Move</v-btn
                   >
                 </template>
@@ -186,7 +215,6 @@ const removeTask = async ({weekly_plan_id, task_id, group_id, project_id}) => {
                 size="small"
                 rounded
                 @click="addEditTaskDialog.show = true"
-                
                 >Add a task</v-btn
               >
             </v-list-item>
@@ -195,35 +223,41 @@ const removeTask = async ({weekly_plan_id, task_id, group_id, project_id}) => {
       </v-col>
       <v-col cols="12" sm="6">
         <v-card variant="flat" class="rounded-lg">
-          <v-card-title> {{weeklyPlan.week}} </v-card-title>
+          <v-card-title> {{ weeklyPlan.week }} </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-           <v-list v-for="project in weeklyPlan.projects" :key="project.id">
- 
-              <p class="text-h6">{{project.project_name}}</p>
-          
-            <v-list-item v-for="task in project.tasks" :key="task.id">
-              <TaskCard
-                :task="task"
-                :group_id="task.group_id"
-                :project_id="project.id"
-                movable
-              >
-                <template #actions="{ task }">
-                  <v-btn
-                  :loading="removeTaskLoading"
-                  :disabled="removeTaskLoading"
-                    variant="flat"
-                    color="error"
-                    size="small"
-                    rounded="lg"
-                    @click="removeTask({weekly_plan_id: weeklyPlan.id, task_id: task.id, group_id: task.group_id, project_id: project.project_id})"
-                    >Remove</v-btn
-                  >
-                </template>
-              </TaskCard>
-            </v-list-item>
-           </v-list>
+            <v-list v-for="project in weeklyPlan.projects" :key="project.id">
+              <p class="text-h6">{{ project.project_name }}</p>
+
+              <v-list-item v-for="task in project.tasks" :key="task.id">
+                <TaskCard
+                  :task="task"
+                  :group_id="task.group_id"
+                  :project_id="project.id"
+                  movable
+                >
+                  <template #actions="{ task }">
+                    <v-btn
+                      :loading="removeTaskLoading"
+                      :disabled="removeTaskLoading"
+                      variant="flat"
+                      color="error"
+                      size="small"
+                      rounded="lg"
+                      @click="
+                        removeTask({
+                          weekly_plan_id: route.params.weekly_plan_id,
+                          task_id: task.id,
+                          group_id: task.project_group?.id,
+                          project_id: project.project_id,
+                        })
+                      "
+                      >Remove</v-btn
+                    >
+                  </template>
+                </TaskCard>
+              </v-list-item>
+            </v-list>
           </v-card-text>
         </v-card>
       </v-col>
