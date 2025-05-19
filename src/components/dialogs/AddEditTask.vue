@@ -1,12 +1,12 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { requiredRule } from "@/utils/formRules";
-import { CREATE_TASK, GET_PROJECT_TEAMS } from "@/constants/apis";
+import { CREATE_TASK, GET_PROJECT_TEAM_LIST } from "@/constants/apis";
 import request from "@/plugins/axios";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const { group_id, task } = defineProps({
+const { group_id, task,project_id } = defineProps({
   group_id: {
     type: String,
     required: true,
@@ -73,7 +73,7 @@ const durations = ref([
 const getAssigneesList = async () => {
   try {
     const res = await request.get(
-      GET_PROJECT_TEAMS.replace(":project_id", project_id)
+      GET_PROJECT_TEAM_LIST.replace(":project_id", project_id)
     );
     assigneesList.value = res.data?.detail;
   } catch (error) {
@@ -113,7 +113,7 @@ const handleClose = () => {
 </script>
 
 <template>
-  <v-card class="rounded-lg" variant="outlined" border="dashed">
+  <v-card class="rounded-lg" variant="outlined" border="dashed" >
     <v-card-title
       class="d-flex align-center justify-space-between gap-2 bg-background"
     >
