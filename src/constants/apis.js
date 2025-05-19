@@ -12,10 +12,17 @@ export const CREATE_GROUP = '/project/create_projects_group/'
 export const GET_GROUPS = '/project/get_projects_group/list/:project_id'
 export const GET_PROJECT_TEAMS = '/project/get_project_teams/list/:project_id/'
 //task
+export const GET_PROJECT_TEAM_LIST = '/project/get_project_teams/list/:project_id'
 export const CREATE_TASK = '/project/task/create_task/'
 //weekly plan
 export const GET_WEEKLY_PLAN_TABS = '/project/weekly_plan/get_project_weekly_plan/tab_list/'
-export const GET_WEEKLY_PLAN_DATA = '/project/weekly_plan/get_weekly_plan/list/'
+export const GET_WEEKLY_PLAN_LIST = '/project/weekly_plan/get_weekly_plan/list/'
+export const GET_PROJECT_PENDING_TASKS = '/project/weekly_plan/project_details/:project_id/'
+export const GET_WEEKLY_PLAN_DETAILS = '/project/weekly_plan/get_weekly_plan/details/:weekly_plan_id/'
+export const MOVE_TASK = '/project/weekly_plan/move_task/'
+export const REMOVE_TASK = '/project/weekly_plan/remove_task/'
+
+
 
 
 
