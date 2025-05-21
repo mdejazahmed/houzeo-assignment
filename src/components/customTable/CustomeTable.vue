@@ -5,6 +5,7 @@
       class="rounded-lg bg-surface-light"
       variant="flat"
       border="#E4E4E4 sm"
+      :loading="loading"
     >
       <v-card-title class="d-flex align-center justify-space-between">
         <div
@@ -61,6 +62,10 @@ const { headers, items } = defineProps({
     type: Array,
     required: true,
     default: () => [],
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 });
 </script>
