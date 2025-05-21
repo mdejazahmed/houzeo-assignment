@@ -1,5 +1,4 @@
 <script setup>
-import { ref ,reactive} from "vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import {
   GET_PROJECTS_LIST,
