@@ -30,7 +30,7 @@
           prepend-icon="mdi-logout"
           title="Logout"
           value="logout"
-          @click="logout"
+          @click="handleLogout"
         ></v-list-item>
         <v-list-item prepend-icon="mdi-theme-light-dark" title="Theme">
           <template v-slot:append>
@@ -47,9 +47,10 @@
 <script setup>
 import ToggleTheme from "@/components/themeToggle/ToggleTheme.vue";
 import { useAuthStore } from "@/stores/auth";
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ROUTES } from "@/constants/routeKeys";
 const { logout } = useAuthStore();
+const router = useRouter()
 const currentNav = ref(false);
 const route = useRoute();
 const navItems = [
@@ -64,4 +65,8 @@ const navItems = [
     value: ROUTES.WEEKLY_PLANS.name,
   },
 ];
+const handleLogout = () => {
+  logout()
+  router.push({ name: ROUTES.LOGIN.name })
+}
 </script>
