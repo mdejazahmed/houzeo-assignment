@@ -2,9 +2,9 @@
   
    
       <v-chip v-bind="props">
-        <v-avatar start>
+        <!-- <v-avatar start>
           <v-img :src="props.user?.profile || 'https://cdn.vuetifyjs.com/images/john.png'"></v-img>
-        </v-avatar>
+        </v-avatar> -->
 
         {{ props.user?.email || 'jhon'}}
 
