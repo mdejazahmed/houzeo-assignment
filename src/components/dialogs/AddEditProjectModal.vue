@@ -37,7 +37,7 @@
                 @update:search="getTeamMembersList"
                 closable-chips
                 chips
-                :rules="[requiredArrayRule]"
+                :rules="[requiredRule]"
               >
                 <!-- <template v-slot:chip="{ props, item }">
                   <v-chip  v-bind="props" />
@@ -59,7 +59,13 @@
                   variant="outlined"
                   rounded
                   placeholder="Enter Description"
-                ></v-textarea>
+                  no-resize
+                  :rules="[maxLengthRule(form.description,255)]"
+                >
+                <template v-slot:counter>
+                 {{form.description?.length||0}}/255
+                </template>
+              </v-textarea>
               </v-tabs-window-item>
             </v-tabs-window>
           </div>
@@ -86,7 +92,7 @@ import request from "@/plugins/axios";
 import UserChip from "@/components/chips/UserChip.vue";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
-import { requiredRule, requiredArrayRule } from "@/utils/formRules";
+import { requiredRule, requiredArrayRule,maxLengthRule } from "@/utils/formRules";
 
 const formRef = ref(null);
 
@@ -97,13 +103,13 @@ const props = defineProps({
 });
 
 const form = reactive({
-  name: "",
+  name: null,
   teamMembers:  [],
   description:  "",
 });
 watch(() => props.data, () => {
   if(props.data){
-    form.name = props.data.project_name || "";
+    form.name = props.data.project_name || null;
     form.teamMembers = props.data.team_members || [];
     form.description = props.data.description || "";
   }
