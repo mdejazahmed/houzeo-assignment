@@ -41,7 +41,7 @@ export const minLengthRule = (value, min) => {
 }
 
 export const maxLengthRule = (value, max) => {
-  return value.length <= max || `Maximum ${max} characters allowed`
+  return value?.length <= max || `Maximum ${max} characters allowed`
 }
 
 export const urlRule = (value) => {
