@@ -76,7 +76,7 @@ getProjectDetail();
 
     <v-row>
       <v-col v-for="group in project.project_groups" :key="group.id" cols="12">
-        <GroupCard :group="group">
+        <GroupCard :group="group" variant="flat">
           <section>
             <p class="text-h6" >
               Pending Tasks
@@ -93,24 +93,22 @@ getProjectDetail();
               </v-list-item>
               <v-list-item>
                 <AddEditTask
-              v-if="openTaskDialog.show"
+              v-if="openTaskDialog.show && openTaskDialog.id === group.id"
               @close="closeTaskDialog"
               :project_id="project.id"
               :group_id="group.id"
               @success="handleCreateTask"
             />
             <v-btn
-              v-if="!openTaskDialog.show"
+              v-if="!openTaskDialog.show || openTaskDialog.id !== group.id"
               variant="outlined"
               size="small"
               rounded
-              @click="openTaskDialog.show = true"
+              @click="()=>{openTaskDialog.show = true;openTaskDialog.id = group.id}"
               >Add a task</v-btn
             >
               </v-list-item>
             </v-list>
-            
-           
           </section>
           <section>
             <p class="text-h6" v-if="group?.wip_tasks?.length">WIP Tasks</p>
