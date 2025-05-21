@@ -78,10 +78,10 @@ getProjectDetail();
       <v-col v-for="group in project.project_groups" :key="group.id" cols="12">
         <GroupCard :group="group">
           <section>
-            <p class="text-h6" v-if="group?.pending_tasks?.length">
+            <p class="text-h6" >
               Pending Tasks
             </p>
-            <v-list v-if="group?.pending_tasks?.length">
+            <v-list >
               <v-list-item v-for="task in group?.pending_tasks" :key="task.id">
                 <TaskCard
                   :editable="true"

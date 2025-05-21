@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import {
   GET_PROJECTS_LIST,
@@ -7,11 +6,14 @@ import {
   GET_WEEKLY_PLAN_DETAILS,
   MOVE_TASK,
   REMOVE_TASK,
+  CHANGE_WEEKLY_PLAN_STAGE
 } from "@/constants/apis";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { ROUTES } from "@/constants/routeKeys";
 const route = useRoute();
+const router = useRouter();
 const project = ref({});
 const groups = ref([
   {
@@ -31,17 +33,22 @@ const selectedProject = ref(null);
 const addEditTaskDialog = reactive({
   show: false,
 });
+const loadingProjectList = ref(false);
 const getProjectList = async () => {
+  loadingProjectList.value = true;
   try {
     const res = await request.get(GET_PROJECTS_LIST);
     projectsList.value = res.data?.detail || [];
   } catch (error) {
     console.error("Error fetching projects:", error);
     projectsList.value = [];
+  } finally {
+    loadingProjectList.value = false;
   }
 };
+const loadingPendingTasks = ref(false);
 const getPendingTasks = async (selectedProject) => {
-  console.log("project_id", selectedProject?.id);
+  loadingPendingTasks.value = true;
 
   try {
     const res = await request.get(
@@ -51,12 +58,16 @@ const getPendingTasks = async (selectedProject) => {
     groups.value = project.value?.project_groups || [];
   } catch (error) {
     console.log(error);
+  } finally {
+    loadingPendingTasks.value = false;
   }
 };
 const weeklyPlan = ref({});
 const moveTaskLoading = ref(false);
 const removeTaskLoading = ref(false);
+const loadingWeeklyPlan = ref(false);
 const getWeeklyPlanDetails = async () => {
+  loadingWeeklyPlan.value = true;
   try {
     const res = await request.get(
       GET_WEEKLY_PLAN_DETAILS.replace(
@@ -67,13 +78,15 @@ const getWeeklyPlanDetails = async () => {
     weeklyPlan.value = res.data?.detail;
   } catch (error) {
     console.log(error);
+  } finally {
+    loadingWeeklyPlan.value = false;
   }
 };
 onMounted(async () => {
+  getWeeklyPlanDetails();
   await getProjectList();
   selectedProject.value = projectsList.value[0];
   await getPendingTasks(selectedProject.value);
-  getWeeklyPlanDetails();
 });
 const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
   moveTaskLoading.value = true;
@@ -85,9 +98,13 @@ const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
       project_id,
     });
     // remove task from pending tasks
-    const moveItemGroupIndex=groups.value.findIndex((group)=>group.id===group_id)
-    const moveItemIndex=groups.value[moveItemGroupIndex].pending_tasks.findIndex((task)=>task.id===task_id)
-    groups.value[moveItemGroupIndex].pending_tasks.splice(moveItemIndex,1)
+    const moveItemGroupIndex = groups.value.findIndex(
+      (group) => group.id === group_id
+    );
+    const moveItemIndex = groups.value[
+      moveItemGroupIndex
+    ].pending_tasks.findIndex((task) => task.id === task_id);
+    groups.value[moveItemGroupIndex].pending_tasks.splice(moveItemIndex, 1);
     getWeeklyPlanDetails();
   } catch (error) {
     console.log(error);
@@ -109,23 +126,50 @@ const removeTask = async ({
       group_id,
       project_id,
     });
-const removedTask=res.data?.detail.task
+    const removedTask = res.data?.detail.task;
     // remove task from weekly plan
-    const projectIndex=weeklyPlan.value.projects.findIndex((project)=>project.project_id===project_id)
-    const taskIndex=weeklyPlan.value.projects[projectIndex].tasks.findIndex((task)=>task.id===task_id)
-   weeklyPlan.value.projects[projectIndex].tasks.splice(taskIndex,1)
+    const projectIndex = weeklyPlan.value.projects.findIndex(
+      (project) => project.project_id === project_id
+    );
+    const taskIndex = weeklyPlan.value.projects[projectIndex].tasks.findIndex(
+      (task) => task.id === task_id
+    );
+    weeklyPlan.value.projects[projectIndex].tasks.splice(taskIndex, 1);
     // add task to pending tasks
-    if(res.data?.detail.project.project_id==selectedProject.value.id){
-      const groupIndex=groups.value.findIndex((group)=>group.id===group_id)
-      groups.value[groupIndex].pending_tasks.push(removedTask)
+    if (res.data?.detail.project.project_id == selectedProject.value.id) {
+      const groupIndex = groups.value.findIndex(
+        (group) => group.id === group_id
+      );
+      groups.value[groupIndex].pending_tasks.push(removedTask);
     }
-    
-    
+
     getWeeklyPlanDetails();
   } catch (error) {
     console.log(error);
   } finally {
     removeTaskLoading.value = false;
+  }
+};
+// Add this computed property
+const totalTasks = computed(() => {
+  if (!weeklyPlan.value?.projects) return 0;
+  return weeklyPlan.value.projects.reduce(
+    (total, project) => total + (project.tasks?.length || 0),
+    0
+  );
+});
+const submitWeeklyPlanLoading = ref(false);
+const submitWeeklyPlan = async () => {
+  submitWeeklyPlanLoading.value = true;
+  try {
+    const res = await request.patch(CHANGE_WEEKLY_PLAN_STAGE.replace(":weekly_plan_id", route.params.weekly_plan_id),{
+      plan_stage_status: "Draft"
+    });
+    router.push({ name: ROUTES.WEEKLY_PLANS.name });
+  } catch (error) {
+    console.log(error);
+  } finally {
+    submitWeeklyPlanLoading.value = false;
   }
 };
 </script>
@@ -148,6 +192,7 @@ const removedTask=res.data?.detail.task
               >Select Project:
             </label>
             <v-autocomplete
+              :loading="loadingProjectList"
               name="select_project"
               id="select_project"
               v-model="selectedProject"
@@ -161,8 +206,13 @@ const removedTask=res.data?.detail.task
             />
           </v-card-title>
         </v-card>
+        <v-skeleton-loader
+          v-if="loadingPendingTasks"
+          type="list-item-two-line"
+        ></v-skeleton-loader>
 
         <GroupCard
+          v-else
           variant="flat"
           v-for="group in project.project_groups"
           :key="group.id"
@@ -222,13 +272,28 @@ const removedTask=res.data?.detail.task
         </GroupCard>
       </v-col>
       <v-col cols="12" sm="6">
-        <v-card variant="flat" class="rounded-lg">
-          <v-card-title> {{ weeklyPlan.week }} </v-card-title>
-          <v-divider></v-divider>
-          <v-card-text>
-            <v-list v-for="project in weeklyPlan.projects" :key="project.id">
-              <p class="text-h6">{{ project.project_name }}</p>
 
+        <v-card
+
+          variant="flat"
+          class="rounded-lg"
+          :loading="loadingWeeklyPlan"
+         style="top: 16px; position: sticky;"
+        >
+          <v-card-title>  {{ weeklyPlan.week }} <span class="bg-red rounded-xl px-2">{{totalTasks}}</span> </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text style="min-height: calc(100vh - 160px); max-height: calc(100vh - 120px); overflow-y: auto;">
+            <div v-if="!weeklyPlan?.projects?.length" class="d-flex flex-column align-center justify-center">
+              <h6 class="text-h6">Move tasks here</h6>
+              <v-img
+                src="@/assets/emptyStates/no_tasks.svg"
+                width="50%"
+                cover
+              ></v-img>
+              <p class="text-subtitle-2 text-medium-emphasis">Currently there are no tasks for this week</p>
+            </div>
+            <v-list v-else v-for="project in weeklyPlan.projects" :key="project.id">
+              <p class="text-h6">{{ project.project_name }}</p>
               <v-list-item v-for="task in project.tasks" :key="task.id">
                 <TaskCard
                   :task="task"
@@ -252,6 +317,7 @@ const removedTask=res.data?.detail.task
                           project_id: project.project_id,
                         })
                       "
+                     
                       >Remove</v-btn
                     >
                   </template>
@@ -259,6 +325,17 @@ const removedTask=res.data?.detail.task
               </v-list-item>
             </v-list>
           </v-card-text>
+          <v-card-actions v-if="weeklyPlan?.projects?.length">
+            <label class="text-subtitle-2 text-medium-emphasis"> <v-icon icon="mdi-information"></v-icon> If plan not submitted before Friday, your weekly plan will move missed plans list.</label>
+            <v-spacer></v-spacer>
+            <v-btn
+              variant="flat"
+              color="primary"
+              @click="submitWeeklyPlan"
+              :loading="submitWeeklyPlanLoading"
+              >Submit</v-btn
+            >
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>

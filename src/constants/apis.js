@@ -21,6 +21,8 @@ export const GET_PROJECT_PENDING_TASKS = '/project/weekly_plan/project_details/:
 export const GET_WEEKLY_PLAN_DETAILS = '/project/weekly_plan/get_weekly_plan/details/:weekly_plan_id/'
 export const MOVE_TASK = '/project/weekly_plan/move_task/'
 export const REMOVE_TASK = '/project/weekly_plan/remove_task/'
+export const CHANGE_WEEKLY_PLAN_STAGE = '/project/weekly_plan/update_weekly_plan_stage/:weekly_plan_id/'
+
 
 
 

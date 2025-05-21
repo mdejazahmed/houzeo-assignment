@@ -43,11 +43,11 @@ const progress = computed(() => {
   <div>
     <div class="d-flex align-center justify-space-between gap-2">
       <div class="text-h6">
-        {{ props.group?.group_name }}
+        {{ props.group?.group_name }} <span class="bg-red rounded-xl px-2">{{props.group.pending_tasks?.length}}</span>
       </div>
     </div>
 
-    <v-card class="rounded-lg mt-2">
+    <v-card v-bind="$attrs" class="rounded-lg mt-2">
       <v-card-title :title="props.group?.name">
         <div class="d-flex align-center gap-2 justify-space-between" v-if="props.showProgress">
           <v-progress-linear
