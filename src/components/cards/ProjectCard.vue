@@ -31,9 +31,11 @@
           <span class="text-subtitle-2">10%</span>
         </div>
       </v-card-title>
+    
       <v-card-text>
-        <div class="border-dashed pa-2 rounded-lg d-flex flex-column gap-2">
-          <p>
+        
+        <div class="border-dashed pa-2 rounded-lg d-flex flex-column gap-2" >
+          <p class="text-medium-emphasis text-truncate">
             {{ props.project.description }}
           </p>
           <div class="d-flex align-center gap-2">
