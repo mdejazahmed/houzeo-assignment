@@ -37,10 +37,11 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { ROUTES } from '@/constants/routeKeys'
 import { useUserStore } from '@/stores/user'
+import { useSnackbarStore } from '@/stores/app'
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const router = useRouter()
-
+const snackbarStore = useSnackbarStore()
 const email = ref('')
 const loading = ref(false)
 
@@ -58,9 +59,10 @@ try {
     })
     authStore.setToken({accessToken: data.detail.access_token, refreshToken: data.detail.refresh_token})
     userStore.setUser(data.detail.user_data)
+    snackbarStore.showSnackbar({msg:"Login Successful"})
     router.push({name: ROUTES.HOME.name})
 } catch (error) {
-  console.log(error)
+  snackbarStore.showSnackbar({msg:"Login Failed",color:"error"})
 } finally {
   loading.value = false
 }
