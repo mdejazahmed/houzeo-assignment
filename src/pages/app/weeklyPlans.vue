@@ -16,7 +16,7 @@ const headers = [
   { title: "Action", key: "action", align: "center" },
 ];
 const items = ref([]);
-
+const loadingTable = ref(false);
 // Computed property to get the initial tab value from URL
 const initialTab = computed(() => route.query.tab || "Pending");
 
@@ -47,6 +47,7 @@ const getWeeklyPlanTabs = async () => {
 // Fetch tabs when component is mounted
 
 const getWeeklyPlanData = async () => {
+loadingTable.value = true;
   try {
     const res = await request.get(GET_WEEKLY_PLAN_LIST, {
       params: {
@@ -57,6 +58,8 @@ const getWeeklyPlanData = async () => {
   } catch (error) {
     console.error("Error fetching weekly plan data:", error);
     items.value = [];
+  }finally {
+    loadingTable.value = false;
   }
 };
 onMounted(async () => {
@@ -83,10 +86,10 @@ switch (btn.key) {
     </v-row>
     <v-row>
       <v-col>
-        <v-card>
+        <v-card variant="flat" class="rounded-lg" > 
           <v-card-text>
             <Tabs v-model="tabValue" :tabs="tabs" @update:modelValue="getWeeklyPlanData" />
-            <CustomeTable :headers="headers" :items="items" class="mt-4">
+            <CustomeTable :headers="headers" :items="items" class="mt-4" :loading="loadingTable">
               <template #status="{ item }">
                 <v-chip
                   :color="item.status.color"
