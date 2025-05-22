@@ -19,8 +19,11 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/app/createWeeklyPlan': RouteRecordInfo<'/app/createWeeklyPlan', '/app/createWeeklyPlan', Record<never, never>, Record<never, never>>,
+    '/app/editWeeklyPlan': RouteRecordInfo<'/app/editWeeklyPlan', '/app/editWeeklyPlan', Record<never, never>, Record<never, never>>,
     '/app/home': RouteRecordInfo<'/app/home', '/app/home', Record<never, never>, Record<never, never>>,
     '/app/project': RouteRecordInfo<'/app/project', '/app/project', Record<never, never>, Record<never, never>>,
+    '/app/taskList': RouteRecordInfo<'/app/taskList', '/app/taskList', Record<never, never>, Record<never, never>>,
+    '/app/viewWeeklyPlan': RouteRecordInfo<'/app/viewWeeklyPlan', '/app/viewWeeklyPlan', Record<never, never>, Record<never, never>>,
     '/app/weeklyPlans': RouteRecordInfo<'/app/weeklyPlans', '/app/weeklyPlans', Record<never, never>, Record<never, never>>,
     '/auth/login': RouteRecordInfo<'/auth/login', '/auth/login', Record<never, never>, Record<never, never>>,
     '/not-found': RouteRecordInfo<'/not-found', '/not-found', Record<never, never>, Record<never, never>>,
