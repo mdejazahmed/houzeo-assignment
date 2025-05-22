@@ -13,7 +13,7 @@ const headers = [
   { title: "Due Date", key: "due_date", align: "left" },
   { title: "Status", key: "status", align: "left" },
   { title: "Overdue Days", key: "overdue_days", align: "left" },
-  { title: "Action", key: "action", align: "center" },
+  { title: "Action", key: "action", align: "center",width: "300px" },
 ];
 const items = ref([]);
 const loadingTable = ref(false);
@@ -71,6 +71,12 @@ const handleBtnClick = (btn,weekly_plan_id) => {
 switch (btn.key) {
   case "create_plan":
     router.push({ name: ROUTES.CREATE_WEEKLY_PLAN.name, params: { weekly_plan_id } });
+    break;
+  case "edit_plan":
+    router.push({ name: ROUTES.EDIT_WEEKLY_PLAN.name, params: { weekly_plan_id } });
+    break;
+  case "view_plan":
+    router.push({ name: ROUTES.VIEW_WEEKLY_PLAN.name, params: { weekly_plan_id } });
     break;
 }
 };
