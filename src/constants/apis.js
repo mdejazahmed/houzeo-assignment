@@ -14,6 +14,8 @@ export const GET_PROJECT_TEAMS = '/project/get_project_teams/list/:project_id/'
 //task
 export const GET_PROJECT_TEAM_LIST = '/project/get_project_teams/list/:project_id'
 export const CREATE_TASK = '/project/task/create_task/'
+export const MARK_TASK_COMPLETED = '/project/task/update_task_status/:task_id/'
+
 //weekly plan
 export const GET_WEEKLY_PLAN_TABS = '/project/weekly_plan/get_project_weekly_plan/tab_list/'
 export const GET_WEEKLY_PLAN_LIST = '/project/weekly_plan/get_weekly_plan/list/'
