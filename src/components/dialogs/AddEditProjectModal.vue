@@ -38,6 +38,7 @@
                 closable-chips
                 chips
                 :rules="[requiredRule]"
+                hide-no-data
               >
                 <!-- <template v-slot:chip="{ props, item }">
                   <v-chip  v-bind="props" />
@@ -118,7 +119,7 @@ const tab = ref(null);
 const teamMembersList = ref([]);
 const getTeamMembersList = async (search) => {
   try {
-    const res = await request.get(GET_MEMBERS_LIST);
+    const res = await request.get(GET_MEMBERS_LIST,{params:{search}});
     teamMembersList.value = res.data.detail;
   } catch (error) {
     console.log(error);
