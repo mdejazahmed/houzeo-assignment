@@ -43,7 +43,7 @@ const progress = computed(() => {
   <div>
     <div class="d-flex align-center justify-space-between gap-2">
       <div class="text-h6">
-        {{ props.group?.group_name }} <span class="bg-red rounded-xl px-2">{{props.group.pending_tasks?.length}}</span>
+        {{ props.group?.group_name }} <span class="bg-count rounded-xl px-2">{{props.group.pending_tasks?.length}}</span>
       </div>
     </div>
 
