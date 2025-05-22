@@ -15,7 +15,10 @@ export const useUserStore = defineStore('user', {
 
     hasPermission: (state) => (permission) => {
       return state.permissions.includes(permission)
-    }
+    },
+    getFirstName: (state) => {
+      return state.user?.email?.split(".")[0].charAt(0).toUpperCase()+state.user?.email?.split(".")[0].slice(1)
+    },
   },
 
   actions: {
