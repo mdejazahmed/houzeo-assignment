@@ -167,6 +167,7 @@ const handleClose = () => {
         <div class="d-flex gap-4">
           <label for="assignee" class="text-subtitle-2 w-10"> Assignee </label>
           <v-autocomplete
+          hide-no-data
             v-model="taskForm.assignee"
             :items="assigneesList"
             variant="underlined"
@@ -226,7 +227,6 @@ const handleClose = () => {
       >
       <v-btn
         variant="outlined"
-        color="secondary"
         class="rounded-lg"
         @click="handleClose"
         >Cancel</v-btn
