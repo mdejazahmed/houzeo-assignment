@@ -1,11 +1,16 @@
 <template>
   <v-navigation-drawer expand-on-hover>
     <v-list>
-      <v-list-item
-        prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-        subtitle="sandra_a88@gmailcom"
-        title="Sandra Adams"
-      ></v-list-item>
+      <v-list-item  
+        :subtitle="user?.email"
+        :title="userStore.getFirstName"
+      >
+      <template v-slot:prepend>
+          <v-avatar color="secondary">
+            {{userStore.getFirstName.charAt(0).toUpperCase()}}
+          </v-avatar>
+        </template>
+    </v-list-item>
     </v-list>
 
     <v-divider></v-divider>
@@ -49,6 +54,9 @@ import ToggleTheme from "@/components/themeToggle/ToggleTheme.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter, useRoute } from "vue-router";
 import { ROUTES } from "@/constants/routeKeys";
+import {useUserStore} from "@/stores/user";
+const userStore = useUserStore()
+const {user} = userStore
 const { logout } = useAuthStore();
 const router = useRouter()
 const currentNav = ref(false);
@@ -63,6 +71,11 @@ const navItems = [
     title: "Weekly Plans",
     icon: "mdi-calendar-week-outline",
     value: ROUTES.WEEKLY_PLANS.name,
+  },
+  {
+    title: "Task List",
+    icon: "mdi-format-list-bulleted",
+    value: ROUTES.TASK_LIST.name,
   },
 ];
 const handleLogout = () => {
