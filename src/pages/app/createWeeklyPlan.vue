@@ -163,7 +163,7 @@ const submitWeeklyPlan = async () => {
   submitWeeklyPlanLoading.value = true;
   try {
     const res = await request.patch(CHANGE_WEEKLY_PLAN_STAGE.replace(":weekly_plan_id", route.params.weekly_plan_id),{
-      plan_stage_status: "Draft"
+      plan_stage_status: "Plan Submitted"
     });
     router.push({ name: ROUTES.WEEKLY_PLANS.name });
   } catch (error) {
@@ -280,11 +280,11 @@ const submitWeeklyPlan = async () => {
           :loading="loadingWeeklyPlan"
          style="top: 16px; position: sticky;"
         >
-          <v-card-title>  {{ weeklyPlan.week }} <span class="bg-red rounded-xl px-2">{{totalTasks}}</span> </v-card-title>
+          <v-card-title>  {{ weeklyPlan.week }} <span class="bg-count rounded-xl px-2">{{totalTasks}}</span> </v-card-title>
           <v-divider></v-divider>
           <v-card-text style="min-height: calc(100vh - 160px); max-height: calc(100vh - 120px); overflow-y: auto;">
             <div v-if="!weeklyPlan?.projects?.length" class="d-flex flex-column align-center justify-center">
-              <h6 class="text-h6">Move tasks here</h6>
+              <h6 class="text-h6 text-primary">Move tasks here</h6>
               <v-img
                 src="@/assets/emptyStates/no_tasks.svg"
                 width="50%"
