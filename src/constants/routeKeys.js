@@ -20,4 +20,16 @@ export const ROUTES = {
       name: "create_weekly_plan",
       path: "/create_weekly_plan/:weekly_plan_id",
     },
+    VIEW_WEEKLY_PLAN: {
+      name: "view_weekly_plan",
+      path: "/view_weekly_plan/:weekly_plan_id",
+    },
+    EDIT_WEEKLY_PLAN: {
+      name: "edit_weekly_plan",
+      path: "/edit_weekly_plan/:weekly_plan_id",
+    },
+    TASK_LIST: {
+      name: "task_list",
+      path: "/task_list",
+    },
 }   
