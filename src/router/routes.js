@@ -56,6 +56,35 @@ export const routes = [
         
         }
       },
+    {
+        name: ROUTES.EDIT_WEEKLY_PLAN.name,
+        path: ROUTES.EDIT_WEEKLY_PLAN.path,
+        component: () => import('@/pages/app/editWeeklyPlan.vue'),
+        meta: {
+          title: 'Edit Weekly Plan',
+          requiresAuth: true,
+        }
+      },
+    {
+        name: ROUTES.VIEW_WEEKLY_PLAN.name,
+        path: ROUTES.VIEW_WEEKLY_PLAN.path,
+        component: () => import('@/pages/app/viewWeeklyPlan.vue'),
+        meta: {
+          title: 'View Weekly Plan',
+          requiresAuth: true,
+        }
+      },
+      // Task List Routes
+    {
+        name: ROUTES.TASK_LIST.name,
+        path: ROUTES.TASK_LIST.path,
+        component: () => import('@/pages/app/taskList.vue'),
+        meta: {
+          title: 'Task List',
+          requiresAuth: true,
+          layout: defaultLayout,
+        }
+      },
     // Not Found Route
     {
     path: '/:catchAll(.*)',
