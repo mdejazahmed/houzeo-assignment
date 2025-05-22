@@ -50,7 +50,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
   />
   <v-card
     v-else
-    border="thin dashed"
+    :border="task.task_status === 'Completed' ? 'success md dashed' : 'thin dashed'"
     variant="outlined"
     class="rounded-lg d-flex flex-column gap-2"
     :hover="editable"
@@ -73,7 +73,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           prepend-icon="mdi-calendar-blank-outline"
           label
           density="compact"
-          color="secondary"
+         
           variant="outlined"
           class="border-dashed"
         >
@@ -84,7 +84,6 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           prepend-icon="mdi-clock-outline"
           label
           density="compact"
-          color="secondary"
           variant="outlined"
           class="border-dashed"
         >
@@ -109,9 +108,8 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
             prepend-icon="mdi-account-group-outline"
             label
             density="compact"
-            color="purple"
+            color="secondary"
             variant="flat"
-            class="border-dashed text-white"
           >
           </v-chip>
         </div>
