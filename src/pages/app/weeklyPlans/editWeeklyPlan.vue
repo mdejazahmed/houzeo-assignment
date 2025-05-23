@@ -6,9 +6,9 @@ import {
   GET_WEEKLY_PLAN_DETAILS,
   MOVE_TASK,
   REMOVE_TASK,
-  CHANGE_WEEKLY_PLAN_STAGE
+  CHANGE_WEEKLY_PLAN_STAGE,
 } from "@/constants/apis";
-import { WORK_REPORT_SUBMITTED } from "@/constants/keys";
+import { PENDING, DRAFT, PLAN_SUBMITTED, WORK_REPORT_SUBMITTED } from "@/constants/keys";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -159,18 +159,27 @@ const totalTasks = computed(() => {
     0
   );
 });
-const submitWrokReportLoading = ref(false);
-const submitWrokReport = async () => {
-  submitWrokReportLoading.value = true;
+const submitLoading = ref(false);
+const submit = async (stage) => {
+  submitLoading.value = true;
   try {
-    const res = await request.patch(CHANGE_WEEKLY_PLAN_STAGE.replace(":weekly_plan_id", route.params.weekly_plan_id),{
-      plan_stage_status: WORK_REPORT_SUBMITTED
+    const res = await request.patch(
+      CHANGE_WEEKLY_PLAN_STAGE.replace(
+        ":weekly_plan_id",
+        route.params.weekly_plan_id
+      ),
+      {
+        plan_stage_status: stage,
+      }
+    );
+    router.push({
+      name: ROUTES.WEEKLY_PLANS.name,
+      query: { tab: stage },
     });
-    router.push({ name: ROUTES.WEEKLY_PLANS.name, query: { tab: WORK_REPORT_SUBMITTED } });
   } catch (error) {
     console.log(error);
   } finally {
-    submitWrokReportLoading.value = false;
+    submitLoading.value = false;
   }
 };
 </script>
@@ -273,33 +282,49 @@ const submitWrokReport = async () => {
         </GroupCard>
       </v-col>
       <v-col cols="12" sm="6">
-
         <v-card
-
           variant="flat"
           class="rounded-lg"
           :loading="loadingWeeklyPlan"
-         style="top: 16px; position: sticky;"
+          style="top: 16px; position: sticky"
         >
-          <v-card-title>  {{ weeklyPlan.week }} <span class="bg-count rounded-xl px-2">{{totalTasks}}</span> </v-card-title>
+          <v-card-title>
+            {{ weeklyPlan.week }}
+            <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
+          </v-card-title>
           <v-divider></v-divider>
-          <v-card-text style="min-height: calc(100vh - 160px); max-height: calc(100vh - 120px); overflow-y: auto;">
-            <div v-if="!weeklyPlan?.projects?.length" class="d-flex flex-column align-center justify-center">
+          <v-card-text
+            style="
+              min-height: calc(100vh - 160px);
+              max-height: calc(100vh - 120px);
+              overflow-y: auto;
+            "
+          >
+            <div
+              v-if="!weeklyPlan?.projects?.length"
+              class="d-flex flex-column align-center justify-center"
+            >
               <h6 class="text-h6 text-primary">Move tasks here</h6>
               <v-img
                 src="@/assets/emptyStates/no_tasks.svg"
                 width="50%"
                 cover
               ></v-img>
-              <p class="text-subtitle-2 text-medium-emphasis">Currently there are no tasks for this week</p>
+              <p class="text-subtitle-2 text-medium-emphasis">
+                Currently there are no tasks for this week
+              </p>
             </div>
-            <v-list v-else v-for="project in weeklyPlan.projects" :key="project.id">
+            <v-list
+              v-else
+              v-for="project in weeklyPlan.projects"
+              :key="project.id"
+            >
               <p class="text-h6">{{ project.project_name }}</p>
               <v-list-item v-for="task in project.tasks" :key="task.id">
                 <TaskCard
                   :task="task"
-                  :group_id="task.group_id"
-                  :project_id="project.id"
+                  :group_id="task.project_group?.id"
+                  :project_id="project.project_id"
                   movable
                 >
                   <template #actions="{ task }">
@@ -318,7 +343,6 @@ const submitWrokReport = async () => {
                           project_id: project.project_id,
                         })
                       "
-                     
                       >Remove</v-btn
                     >
                   </template>
@@ -327,14 +351,29 @@ const submitWrokReport = async () => {
             </v-list>
           </v-card-text>
           <v-card-actions v-if="weeklyPlan?.projects?.length">
-            <label class="text-subtitle-2 text-medium-emphasis"> <v-icon icon="mdi-information"></v-icon> If plan not submitted before Friday, your weekly plan will move missed plans list.</label>
+            <label class="text-subtitle-2 text-medium-emphasis">
+              <v-icon icon="mdi-information"></v-icon> If plan not submitted
+              before Friday, your weekly plan will move missed plans
+              list.</label
+            >
             <v-spacer></v-spacer>
             <v-btn
+              v-if="weeklyPlan.stage == PENDING || weeklyPlan.stage == DRAFT"
               variant="flat"
               color="primary"
-              @click="submitWrokReport"
-              :loading="submitWrokReportLoading"
-              :disabled="submitWrokReportLoading"
+              @click="submit(PLAN_SUBMITTED)"
+              :loading="submitLoading"
+              :disabled="submitLoading"
+              rounded="lg"
+              >Submit Weekly Plan</v-btn
+            >
+            <v-btn
+              v-if="weeklyPlan.stage == PLAN_SUBMITTED"
+              variant="flat"
+              color="primary"
+              @click="submit(WORK_REPORT_SUBMITTED)"
+              :loading="submitLoading"
+              :disabled="submitLoading"
               rounded="lg"
               >Submit Work Report</v-btn
             >

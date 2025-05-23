@@ -99,9 +99,11 @@ const handleMarkIncompleted = async (task) => {
   <v-container>
     <v-row>
       <v-col>
-        <h5 class="text-h5 font-weight-bold">Weekly Plan 🚀</h5>
+        <h5 class="text-h5 font-weight-bold">
+         Weekly Plan 🚀
+        </h5>
         <p class="text-subtitle-2 text-medium-emphasis">
-          {{ weeklyPlan.week }}
+          {{ weeklyPlan.week }} ({{ weeklyPlan.stage }})
         </p>
       </v-col>
     </v-row>

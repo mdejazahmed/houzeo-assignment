@@ -22,7 +22,7 @@ export const ROUTES = {
     },
     VIEW_WEEKLY_PLAN: {
       name: "view_weekly_plan",
-      path: "/view_weekly_plan/:weekly_plan_id",
+      path: "/weekly_plan/:weekly_plan_id",
     },
     EDIT_WEEKLY_PLAN: {
       name: "edit_weekly_plan",

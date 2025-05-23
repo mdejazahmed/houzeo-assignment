@@ -19,7 +19,7 @@ export const routes = [
     {
         name: ROUTES.HOME.name,
         path: ROUTES.HOME.path,
-        component: () => import('@/pages/app/home.vue'),
+        component: () => import('@/pages/app/home/home.vue'),
         meta: {
           title: 'Home',
           layout: defaultLayout,
@@ -29,7 +29,7 @@ export const routes = [
     {
         name: ROUTES.PROJECT.name,
         path: ROUTES.PROJECT.path,
-        component: () => import('@/pages/app/project.vue'),
+        component: () => import('@/pages/app/home/project.vue'),
         meta: {
           title: 'Project',
           requiresAuth: true
@@ -39,7 +39,7 @@ export const routes = [
     {
         name: ROUTES.WEEKLY_PLANS.name,
         path: ROUTES.WEEKLY_PLANS.path,
-        component: () => import('@/pages/app/weeklyPlans.vue'),
+        component: () => import('@/pages/app/weeklyPlans/weeklyPlans.vue'),
         meta: {
           title: 'Weekly Plan',
           requiresAuth: true,
@@ -49,7 +49,7 @@ export const routes = [
     {
         name: ROUTES.CREATE_WEEKLY_PLAN.name,
         path: ROUTES.CREATE_WEEKLY_PLAN.path,
-        component: () => import('@/pages/app/createWeeklyPlan.vue'),
+        component: () => import('@/pages/app/weeklyPlans/createWeeklyPlan.vue'),
         meta: {
           title: 'Create Weekly Plan',
           requiresAuth: true,
@@ -59,7 +59,7 @@ export const routes = [
     {
         name: ROUTES.EDIT_WEEKLY_PLAN.name,
         path: ROUTES.EDIT_WEEKLY_PLAN.path,
-        component: () => import('@/pages/app/editWeeklyPlan.vue'),
+        component: () => import('@/pages/app/weeklyPlans/editWeeklyPlan.vue'),
         meta: {
           title: 'Edit Weekly Plan',
           requiresAuth: true,
@@ -68,7 +68,7 @@ export const routes = [
     {
         name: ROUTES.VIEW_WEEKLY_PLAN.name,
         path: ROUTES.VIEW_WEEKLY_PLAN.path,
-        component: () => import('@/pages/app/viewWeeklyPlan.vue'),
+        component: () => import('@/pages/app/weeklyPlans/viewWeeklyPlan.vue'),
         meta: {
           title: 'View Weekly Plan',
           requiresAuth: true,
@@ -78,7 +78,7 @@ export const routes = [
     {
         name: ROUTES.TASK_LIST.name,
         path: ROUTES.TASK_LIST.path,
-        component: () => import('@/pages/app/taskList.vue'),
+        component: () => import('@/pages/app/taskList/taskList.vue'),
         meta: {
           title: 'Task List',
           requiresAuth: true,
