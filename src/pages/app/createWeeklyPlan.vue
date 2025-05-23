@@ -8,6 +8,7 @@ import {
   REMOVE_TASK,
   CHANGE_WEEKLY_PLAN_STAGE
 } from "@/constants/apis";
+import { PLAN_SUBMITTED } from "@/constants/keys";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -163,7 +164,7 @@ const submitWeeklyPlan = async () => {
   submitWeeklyPlanLoading.value = true;
   try {
     const res = await request.patch(CHANGE_WEEKLY_PLAN_STAGE.replace(":weekly_plan_id", route.params.weekly_plan_id),{
-      plan_stage_status: "Plan Submitted"
+      plan_stage_status: PLAN_SUBMITTED
     });
     router.push({ name: ROUTES.WEEKLY_PLANS.name });
   } catch (error) {
@@ -326,14 +327,15 @@ const submitWeeklyPlan = async () => {
             </v-list>
           </v-card-text>
           <v-card-actions v-if="weeklyPlan?.projects?.length">
-            <label class="text-subtitle-2 text-medium-emphasis"> <v-icon icon="mdi-information"></v-icon> If plan not submitted before Friday, your weekly plan will move missed plans list.</label>
+            <label class="text-subtitle-2 text-medium-emphasis"> <v-icon icon="mdi-information"></v-icon> If plan not submitted before {{weeklyPlan.due_date}}, your weekly plan will move missed plans list.</label>
             <v-spacer></v-spacer>
             <v-btn
               variant="flat"
               color="primary"
               @click="submitWeeklyPlan"
               :loading="submitWeeklyPlanLoading"
-              >Submit</v-btn
+              rounded="lg"
+              >Submit Weekly Plan</v-btn
             >
           </v-card-actions>
         </v-card>

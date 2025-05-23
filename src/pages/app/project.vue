@@ -76,7 +76,7 @@ getProjectDetail();
 
     <v-row>
       <v-col v-for="group in project.project_groups" :key="group.id" cols="12">
-        <GroupCard :group="group" variant="flat">
+        <GroupCard :group="group" variant="flat" :showProgress="true">
           <section>
             <p class="text-h6" >
               Pending Tasks

@@ -6,7 +6,7 @@ import request from "@/plugins/axios";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const { group_id, task,project_id } = defineProps({
+const { group_id, task, project_id } = defineProps({
   group_id: {
     type: String,
     required: true,
@@ -70,14 +70,21 @@ const durations = ref([
     text: "8 Hr",
   },
 ]);
-const getAssigneesList = async () => {
-  try {
-    const res = await request.get(
-      GET_PROJECT_TEAM_LIST.replace(":project_id", project_id)
-    );
-    assigneesList.value = res.data?.detail;
-  } catch (error) {
-    console.log(error);
+const getAssigneesList = async (search = "") => {
+  if (search) {
+    try {
+      const res = await request.get(
+        GET_PROJECT_TEAM_LIST.replace(":project_id", project_id),
+        {
+          params: {
+            search,
+          },
+        }
+      );
+      assigneesList.value = res.data?.detail;
+    } catch (error) {
+      console.log(error);
+    }
   }
 };
 
@@ -93,7 +100,7 @@ const addEditTask = async () => {
     task_priority: taskForm.task_priority,
     duration: taskForm.duration,
   };
-  if(task?.id){
+  if (task?.id) {
     data.id = task?.id;
   }
   try {
@@ -113,11 +120,11 @@ const handleClose = () => {
 </script>
 
 <template>
-  <v-card class="rounded-lg" variant="outlined" border="dashed" >
+  <v-card class="rounded-lg" variant="outlined" border="dashed">
     <v-card-title
       class="d-flex align-center justify-space-between gap-2 bg-background"
     >
-      <h5>{{ task?.id ? 'Edit Task' : 'Add a task' }}</h5>
+      <h5>{{ task?.id ? "Edit Task" : "Add a task" }}</h5>
       <v-btn
         icon="mdi-close"
         variant="text"
@@ -167,8 +174,8 @@ const handleClose = () => {
         <div class="d-flex gap-4">
           <label for="assignee" class="text-subtitle-2 w-10"> Assignee </label>
           <v-autocomplete
-          hide-no-data
-            v-model="taskForm.assignee"
+            hide-no-data
+            v-model.trim="taskForm.assignee"
             :items="assigneesList"
             variant="underlined"
             density="compact"
@@ -223,12 +230,9 @@ const handleClose = () => {
         type="submit"
         @click="addEditTask"
         :loading="loading"
-        >{{ task?.id ? 'Save' : 'Add Task' }}</v-btn
+        >{{ task?.id ? "Save" : "Add Task" }}</v-btn
       >
-      <v-btn
-        variant="outlined"
-        class="rounded-lg"
-        @click="handleClose"
+      <v-btn variant="outlined" class="rounded-lg" @click="handleClose"
         >Cancel</v-btn
       >
     </v-card-actions>

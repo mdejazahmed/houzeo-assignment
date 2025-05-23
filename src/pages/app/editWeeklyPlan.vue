@@ -8,6 +8,7 @@ import {
   REMOVE_TASK,
   CHANGE_WEEKLY_PLAN_STAGE
 } from "@/constants/apis";
+import { WORK_REPORT_SUBMITTED } from "@/constants/keys";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -158,18 +159,18 @@ const totalTasks = computed(() => {
     0
   );
 });
-const submitWeeklyPlanLoading = ref(false);
-const submitWeeklyPlan = async () => {
-  submitWeeklyPlanLoading.value = true;
+const submitWrokReportLoading = ref(false);
+const submitWrokReport = async () => {
+  submitWrokReportLoading.value = true;
   try {
     const res = await request.patch(CHANGE_WEEKLY_PLAN_STAGE.replace(":weekly_plan_id", route.params.weekly_plan_id),{
-      plan_stage_status: "Plan Submitted"
+      plan_stage_status: WORK_REPORT_SUBMITTED
     });
-    router.push({ name: ROUTES.WEEKLY_PLANS.name });
+    router.push({ name: ROUTES.WEEKLY_PLANS.name, query: { tab: WORK_REPORT_SUBMITTED } });
   } catch (error) {
     console.log(error);
   } finally {
-    submitWeeklyPlanLoading.value = false;
+    submitWrokReportLoading.value = false;
   }
 };
 </script>
@@ -331,9 +332,11 @@ const submitWeeklyPlan = async () => {
             <v-btn
               variant="flat"
               color="primary"
-              @click="submitWeeklyPlan"
-              :loading="submitWeeklyPlanLoading"
-              >Submit</v-btn
+              @click="submitWrokReport"
+              :loading="submitWrokReportLoading"
+              :disabled="submitWrokReportLoading"
+              rounded="lg"
+              >Submit Work Report</v-btn
             >
           </v-card-actions>
         </v-card>

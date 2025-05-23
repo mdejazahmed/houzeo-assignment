@@ -95,7 +95,7 @@ switch (btn.key) {
         <v-card variant="flat" class="rounded-lg" > 
           <v-card-text>
             <Tabs v-model="tabValue" :tabs="tabs" @update:modelValue="getWeeklyPlanData" />
-            <CustomeTable :headers="headers" :items="items" class="mt-4" :loading="loadingTable">
+            <CustomeTable :headers="headers" :items="items" class="mt-4" :loading="loadingTable" >
               <template #status="{ item }">
                 <v-chip
                   :color="item.status.color"

@@ -116,6 +116,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
       </div>
     </v-card-text>
     <v-card-actions v-if="movable">
+     <v-spacer></v-spacer>
       <slot name="actions" :task="task"></slot>
     </v-card-actions>
   </v-card>
