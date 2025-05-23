@@ -1,4 +1,3 @@
-
 <script setup>
 import { reactive } from "vue";
 import { ref } from "vue";
@@ -11,6 +10,11 @@ const route = useRoute();
 const addGroupDialog = reactive({
   show: false,
   title: "Add Group",
+  data: null,
+});
+const addMembersDialog = reactive({
+  show: false,
+  title: "Add Team Members",
   data: null,
 });
 const project = ref({});
@@ -61,7 +65,11 @@ getProjectDetail();
           color="primary"
           size="small"
         ></v-btn>
-        <v-btn variant="outlined" color="primary" rounded
+        <v-btn
+          variant="outlined"
+          color="primary"
+          rounded
+          @click="addMembersDialog.show = true,addMembersDialog.data = {project_id:project.id,team_members:project.team_members}"
           >Add Team Members</v-btn
         >
         <v-btn
@@ -78,10 +86,8 @@ getProjectDetail();
       <v-col v-for="group in project.project_groups" :key="group.id" cols="12">
         <GroupCard :group="group" variant="flat" :showProgress="true">
           <section>
-            <p class="text-h6" >
-              Pending Tasks
-            </p>
-            <v-list >
+            <p class="text-h6">Pending Tasks</p>
+            <v-list>
               <v-list-item v-for="task in group?.pending_tasks" :key="task.id">
                 <TaskCard
                   :editable="true"
@@ -93,20 +99,25 @@ getProjectDetail();
               </v-list-item>
               <v-list-item>
                 <AddEditTask
-              v-if="openTaskDialog.show && openTaskDialog.id === group.id"
-              @close="closeTaskDialog"
-              :project_id="project.id"
-              :group_id="group.id"
-              @success="handleCreateTask"
-            />
-            <v-btn
-              v-if="!openTaskDialog.show || openTaskDialog.id !== group.id"
-              variant="outlined"
-              size="small"
-              rounded
-              @click="()=>{openTaskDialog.show = true;openTaskDialog.id = group.id}"
-              >Add a task</v-btn
-            >
+                  v-if="openTaskDialog.show && openTaskDialog.id === group.id"
+                  @close="closeTaskDialog"
+                  :project_id="project.id"
+                  :group_id="group.id"
+                  @success="handleCreateTask"
+                />
+                <v-btn
+                  v-if="!openTaskDialog.show || openTaskDialog.id !== group.id"
+                  variant="outlined"
+                  size="small"
+                  rounded
+                  @click="
+                    () => {
+                      openTaskDialog.show = true;
+                      openTaskDialog.id = group.id;
+                    }
+                  "
+                  >Add a task</v-btn
+                >
               </v-list-item>
             </v-list>
           </section>
@@ -114,8 +125,9 @@ getProjectDetail();
             <p class="text-h6" v-if="group?.wip_tasks?.length">WIP Tasks</p>
             <v-list v-if="group?.wip_tasks?.length">
               <v-list-item v-for="task in group?.wip_tasks" :key="task.id">
-                <TaskCard :task="task" 
-                :group_id="group.id"
+                <TaskCard
+                  :task="task"
+                  :group_id="group.id"
                   :project_id="project.id"
                 />
               </v-list-item>
@@ -130,8 +142,9 @@ getProjectDetail();
                 v-for="task in group?.completed_tasks"
                 :key="task.id"
               >
-                <TaskCard :task="task"
-                :group_id="group.id"
+                <TaskCard
+                  :task="task"
+                  :group_id="group.id"
                   :project_id="project.id"
                 />
               </v-list-item>
@@ -147,6 +160,12 @@ getProjectDetail();
       :data="addGroupDialog.data"
       @success="getProjectDetail"
     />
+    <AddEditMembersModal
+      v-model="addMembersDialog.show"
+      @close="addMembersDialog.show = false"
+      :title="addMembersDialog.title"
+      :data="addMembersDialog.data"
+      @success="getProjectDetail"
+    />
   </v-container>
 </template>
-
