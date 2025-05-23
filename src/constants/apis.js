@@ -7,6 +7,8 @@ export const GET_PROJECTS_LIST = '/project/get_project/list/'
 export const DELETE_PROJECT = '/project/delete_project/:project_id'
 //project
 export const GET_PROJECT = '/project/get_project/details/:project_id'
+export const ADD_TEAM_MEMBER = '/project/add_member_to_project/'
+export const REMOVE_TEAM_MEMBER = '/project/remove_member_to_project/:member_assigned_project_id/'
 //group
 export const CREATE_GROUP = '/project/create_projects_group/'
 export const GET_GROUPS = '/project/get_projects_group/list/:project_id'
