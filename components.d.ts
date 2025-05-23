@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddEditGroupModal: typeof import('./src/components/dialogs/AddEditGroupModal.vue')['default']
+    AddEditMembersModal: typeof import('./src/components/dialogs/AddEditMembersModal.vue')['default']
     AddEditProjectModal: typeof import('./src/components/dialogs/AddEditProjectModal.vue')['default']
     AddEditTask: typeof import('./src/components/dialogs/AddEditTask.vue')['default']
     AddProject: typeof import('./src/components/dialogs/AddProject.vue')['default']
