@@ -44,6 +44,7 @@
               :key="user.id"
               :color="getColor(user.email)"
               size="x-small"
+              class="text-white"
             >
               {{ user.email[0].toUpperCase() }}
             </v-avatar>
@@ -97,5 +98,11 @@ const getColor = (email) => {
 <style scoped>
 .border-dashed {
   border: 1px dashed #bfcfda;
+}
+.v-progress-linear:deep(.v-progress-linear__determinate) {
+  
+  background: linear-gradient(90deg, #35D0AF 0%, #6EFEB3 100%);
+
+
 }
 </style>
