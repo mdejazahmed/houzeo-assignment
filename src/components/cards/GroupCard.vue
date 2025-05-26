@@ -51,10 +51,10 @@ const progress = computed(() => {
       <v-card-title :title="props.group?.name">
         <div class="d-flex align-center gap-2 justify-space-between" v-if="props.showProgress">
           <v-progress-linear
-            color="green"
             height="10"
             :model-value="progress"
             rounded
+
           ></v-progress-linear>
           <span class="text-subtitle-2"
             >{{ props.group?.task_counts?.completed_tasks }} /
@@ -69,4 +69,11 @@ const progress = computed(() => {
   </div>
 </template>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.v-progress-linear:deep(.v-progress-linear__determinate) {
+  
+  background: linear-gradient(90deg, #35D0AF 0%, #6EFEB3 100%);
+
+
+}
+</style>
