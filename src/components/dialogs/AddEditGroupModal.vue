@@ -97,8 +97,10 @@ const route = useRoute();
        project: route.params.project_id,
       };
       const res = await request.post(CREATE_GROUP, data);
-      emit("close");
+
+      
       emit("success");
+      formRef.value.reset();
     } catch (error) {
       console.log(error);
     }
