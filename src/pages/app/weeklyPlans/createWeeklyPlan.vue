@@ -6,7 +6,7 @@ import {
   GET_WEEKLY_PLAN_DETAILS,
   MOVE_TASK,
   REMOVE_TASK,
-  CHANGE_WEEKLY_PLAN_STAGE
+  CHANGE_WEEKLY_PLAN_STAGE,
 } from "@/constants/apis";
 import { PLAN_SUBMITTED } from "@/constants/keys";
 import request from "@/plugins/axios";
@@ -89,8 +89,10 @@ onMounted(async () => {
   selectedProject.value = projectsList.value[0];
   await getPendingTasks(selectedProject.value);
 });
-const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
-  moveTaskLoading.value = true;
+const moveTask = async (task,{ weekly_plan_id, task_id, group_id, project_id }) => {
+  task.loading = true;
+  console.log(task);
+  
   try {
     const res = await request.patch(MOVE_TASK, {
       weekly_plan_id,
@@ -110,7 +112,7 @@ const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
   } catch (error) {
     console.log(error);
   } finally {
-    moveTaskLoading.value = false;
+    task.loading = false;
   }
 };
 const removeTask = async ({
@@ -163,9 +165,15 @@ const submitWeeklyPlanLoading = ref(false);
 const submitWeeklyPlan = async () => {
   submitWeeklyPlanLoading.value = true;
   try {
-    const res = await request.patch(CHANGE_WEEKLY_PLAN_STAGE.replace(":weekly_plan_id", route.params.weekly_plan_id),{
-      plan_stage_status: PLAN_SUBMITTED
-    });
+    const res = await request.patch(
+      CHANGE_WEEKLY_PLAN_STAGE.replace(
+        ":weekly_plan_id",
+        route.params.weekly_plan_id
+      ),
+      {
+        plan_stage_status: PLAN_SUBMITTED,
+      }
+    );
     router.push({ name: ROUTES.WEEKLY_PLANS.name });
   } catch (error) {
     console.log(error);
@@ -173,6 +181,13 @@ const submitWeeklyPlan = async () => {
     submitWeeklyPlanLoading.value = false;
   }
 };
+const totalHours= computed(() => {
+  if (!weeklyPlan.value?.projects) return 0;
+  return weeklyPlan.value.projects.reduce(
+    (total, project) => total + (project.tasks?.reduce((total, task) => total + parseInt(task.duration), 0) || 0),
+    0
+  );
+});
 </script>
 
 <template>
@@ -233,14 +248,14 @@ const submitWeeklyPlan = async () => {
               >
                 <template #actions="{ task }">
                   <v-btn
-                    :loading="moveTaskLoading"
-                    :disabled="moveTaskLoading"
+                    :loading="task.loading"
+                    :disabled="task.loading"
                     variant="flat"
                     size="small"
                     rounded="lg"
                     color="primary"
                     @click="
-                      moveTask({
+                      moveTask(task,{
                         weekly_plan_id: route.params.weekly_plan_id,
                         task_id: task.id,
                         group_id: group.id,
@@ -273,27 +288,48 @@ const submitWeeklyPlan = async () => {
         </GroupCard>
       </v-col>
       <v-col cols="12" sm="6">
-
         <v-card
-
           variant="flat"
           class="rounded-lg"
           :loading="loadingWeeklyPlan"
-         style="top: 16px; position: sticky;"
+          style="top: 16px; position: sticky"
         >
-          <v-card-title>  {{ weeklyPlan.week }} <span class="bg-count rounded-xl px-2">{{totalTasks}}</span> </v-card-title>
+          <v-card-title class="d-flex align-center justify-space-between gap-2">
+            <div>
+              {{ weeklyPlan.week }}
+              <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
+            </div>
+            <div>
+              <label>Total Hours: {{ totalHours }}</label>
+            </div>
+          </v-card-title>
           <v-divider></v-divider>
-          <v-card-text style="min-height: calc(100vh - 160px); max-height: calc(100vh - 120px); overflow-y: auto;">
-            <div v-if="!weeklyPlan?.projects?.length" class="d-flex flex-column align-center justify-center">
+          <v-card-text
+            style="
+              min-height: calc(100vh - 160px);
+              max-height: calc(100vh - 120px);
+              overflow-y: auto;
+            "
+          >
+            <div
+              v-if="!weeklyPlan?.projects?.length"
+              class="d-flex flex-column align-center justify-center"
+            >
               <h6 class="text-h6 text-primary">Move tasks here</h6>
               <v-img
                 src="@/assets/emptyStates/no_tasks.svg"
                 width="50%"
                 cover
               ></v-img>
-              <p class="text-subtitle-2 text-medium-emphasis">Currently there are no tasks for this week</p>
+              <p class="text-subtitle-2 text-medium-emphasis">
+                Currently there are no tasks for this week
+              </p>
             </div>
-            <v-list v-else v-for="project in weeklyPlan.projects" :key="project.id">
+            <v-list
+              v-else
+              v-for="project in weeklyPlan.projects"
+              :key="project.id"
+            >
               <p class="text-h6">{{ project.project_name }}</p>
               <v-list-item v-for="task in project.tasks" :key="task.id">
                 <TaskCard
@@ -318,7 +354,6 @@ const submitWeeklyPlan = async () => {
                           project_id: project.project_id,
                         })
                       "
-                     
                       >Remove</v-btn
                     >
                   </template>
@@ -327,7 +362,11 @@ const submitWeeklyPlan = async () => {
             </v-list>
           </v-card-text>
           <v-card-actions v-if="weeklyPlan?.projects?.length">
-            <label class="text-subtitle-2 text-medium-emphasis"> <v-icon icon="mdi-information"></v-icon> If plan not submitted before {{weeklyPlan.due_date}}, your weekly plan will move missed plans list.</label>
+            <label class="text-subtitle-2 text-medium-emphasis">
+              <v-icon icon="mdi-information"></v-icon> If plan not submitted
+              before {{ weeklyPlan.due_date }}, your weekly plan will move
+              missed plans list.</label
+            >
             <v-spacer></v-spacer>
             <v-btn
               variant="flat"
