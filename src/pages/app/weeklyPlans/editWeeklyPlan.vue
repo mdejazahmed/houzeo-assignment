@@ -7,8 +7,9 @@ import {
   MOVE_TASK,
   REMOVE_TASK,
   CHANGE_WEEKLY_PLAN_STAGE,
+  MARK_TASK_COMPLETED,
 } from "@/constants/apis";
-import { PENDING, DRAFT, PLAN_SUBMITTED, WORK_REPORT_SUBMITTED } from "@/constants/keys";
+import { PENDING, DRAFT, PLAN_SUBMITTED, WORK_REPORT_SUBMITTED, COMPLETED, IN_PROGRESS } from "@/constants/keys";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -89,8 +90,8 @@ onMounted(async () => {
   selectedProject.value = projectsList.value[0];
   await getPendingTasks(selectedProject.value);
 });
-const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
-  moveTaskLoading.value = true;
+const moveTask = async (task,{ weekly_plan_id, task_id, group_id, project_id }) => {
+  task.loading = true;
   try {
     const res = await request.patch(MOVE_TASK, {
       weekly_plan_id,
@@ -110,16 +111,16 @@ const moveTask = async ({ weekly_plan_id, task_id, group_id, project_id }) => {
   } catch (error) {
     console.log(error);
   } finally {
-    moveTaskLoading.value = false;
+    task.loading = false;
   }
 };
-const removeTask = async ({
+const removeTask = async (task,{
   weekly_plan_id,
   task_id,
   group_id,
   project_id,
 }) => {
-  removeTaskLoading.value = true;
+  task.loading = true;
   try {
     const res = await request.patch(REMOVE_TASK, {
       weekly_plan_id,
@@ -148,7 +149,39 @@ const removeTask = async ({
   } catch (error) {
     console.log(error);
   } finally {
-    removeTaskLoading.value = false;
+    task.loading = false;
+  }
+};
+const handleMarkCompleted = async (task) => {
+ task.status_change_loading = true;
+  try {
+    const res = await request.patch(
+      MARK_TASK_COMPLETED.replace(":task_id", task.id),
+      {
+        task_status: COMPLETED,
+      }
+    );
+    task.task_status = COMPLETED;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    task.status_change_loading = false;
+  }
+};
+const handleMarkInProgress = async (task) => {
+ task.status_change_loading = true;
+  try {
+    const res = await request.patch(
+      MARK_TASK_COMPLETED.replace(":task_id", task.id),
+      {
+        task_status: IN_PROGRESS,
+      }
+    );
+    task.task_status = IN_PROGRESS;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    task.status_change_loading = false;
   }
 };
 // Add this computed property
@@ -182,14 +215,21 @@ const submit = async (stage) => {
     submitLoading.value = false;
   }
 };
+const totalHours= computed(() => {
+  if (!weeklyPlan.value?.projects) return 0;
+  return weeklyPlan.value.projects.reduce(
+    (total, project) => total + (project.tasks?.reduce((total, task) => total + parseInt(task.duration), 0) || 0),
+    0
+  );
+});
 </script>
 
 <template>
   <v-container>
     <v-row>
       <v-col>
-        <h5 class="text-h5 font-weight-bold">Create Weekly Plan 🚀</h5>
-        <p class="text-subtitle-2 text-medium-emphasis">Create Weekly Plan</p>
+        <h5 class="text-h5 font-weight-bold">Edit Weekly Plan 🚀</h5>
+        <p class="text-subtitle-2 text-medium-emphasis">Edit Weekly Plan</p>
       </v-col>
     </v-row>
     <v-row>
@@ -242,14 +282,14 @@ const submit = async (stage) => {
               >
                 <template #actions="{ task }">
                   <v-btn
-                    :loading="moveTaskLoading"
-                    :disabled="moveTaskLoading"
+                    :loading="task.loading"
+                    :disabled="task.loading"
                     variant="flat"
                     size="small"
                     rounded="lg"
                     color="primary"
                     @click="
-                      moveTask({
+                      moveTask(task,{
                         weekly_plan_id: route.params.weekly_plan_id,
                         task_id: task.id,
                         group_id: group.id,
@@ -288,9 +328,14 @@ const submit = async (stage) => {
           :loading="loadingWeeklyPlan"
           style="top: 16px; position: sticky"
         >
-          <v-card-title>
-            {{ weeklyPlan.week }}
-            <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
+        <v-card-title class="d-flex align-center justify-space-between gap-2">
+            <div>
+              {{ weeklyPlan.week }}
+              <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
+            </div>
+            <div>
+              <label class="text-subtitle-2 text-medium-emphasis">Total Duration: {{ totalHours }} Hours</label>
+            </div>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text
@@ -329,14 +374,35 @@ const submit = async (stage) => {
                 >
                   <template #actions="{ task }">
                     <v-btn
-                      :loading="removeTaskLoading"
-                      :disabled="removeTaskLoading"
+                      :loading="task.status_change_loading"
+                      :disabled="task.status_change_loading"
+                      v-if="task.task_status !== 'Completed'"
+                      variant="outlined"
+                      color="success"
+                      size="small"
+                      rounded="lg"
+                      @click="handleMarkCompleted(task)"
+                      >Mark Completed</v-btn
+                    >
+                    <v-btn
+                      :loading="task.status_change_loading"
+                      :disabled="task.status_change_loading"
+                      v-else
+                      variant="tonal"
+                      color="warning"
+                      size="small"
+                      rounded="lg"
+                      @click="handleMarkInProgress(task)"
+                    >WIP</v-btn>
+                    <v-btn v-if="task.task_status !== COMPLETED"
+                      :loading="task.loading"
+                      :disabled="task.loading"
                       variant="flat"
                       color="error"
                       size="small"
                       rounded="lg"
                       @click="
-                        removeTask({
+                        removeTask(task,{
                           weekly_plan_id: route.params.weekly_plan_id,
                           task_id: task.id,
                           group_id: task.project_group?.id,
