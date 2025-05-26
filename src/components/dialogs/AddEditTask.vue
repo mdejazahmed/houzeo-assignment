@@ -154,8 +154,9 @@ const handleClose = () => {
             v-model="taskForm.task_priority"
             :rules="[requiredRule]"
           >
-            <v-chip-group v-model="taskForm.task_priority" mandatory>
+            <v-chip-group v-model="taskForm.task_priority" mandatory  selected-class="white-text">
               <v-chip
+             
                 v-for="priority in priorities"
                 :key="priority.value"
                 :text="priority.text"
@@ -241,5 +242,8 @@ const handleClose = () => {
 <style scoped>
 .w-10 {
   width: 10%;
+}
+.white-text {
+  color: white !important;
 }
 </style>
