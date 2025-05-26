@@ -1,12 +1,11 @@
 <script setup>
-import GroupCard from "@/components/cards/GroupCard.vue";
 import {
   GET_WEEKLY_PLAN_DETAILS,
   CHANGE_WEEKLY_PLAN_STAGE,
   MARK_TASK_COMPLETED,
 } from "@/constants/apis";
+import { WORK_REPORT_SUBMITTED, COMPLETED, IN_PROGRESS } from "@/constants/keys";
 import request from "@/plugins/axios";
-import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ROUTES } from "@/constants/routeKeys";
 const route = useRoute();
@@ -67,26 +66,26 @@ const handleMarkCompleted = async (task) => {
     const res = await request.patch(
       MARK_TASK_COMPLETED.replace(":task_id", task.id),
       {
-        task_status: "Completed",
+        task_status: COMPLETED,
       }
     );
-    task.task_status = "Completed";
+    task.task_status = COMPLETED;
   } catch (error) {
     console.log(error);
   } finally {
     loadingStatusChangeId.value = null;
   }
 };
-const handleMarkIncompleted = async (task) => {
+const handleMarkInProgress = async (task) => {
   loadingStatusChangeId.value = task.id;
   try {
     const res = await request.patch(
       MARK_TASK_COMPLETED.replace(":task_id", task.id),
       {
-        task_status: "Incompleted",
+        task_status: IN_PROGRESS,
       }
     );
-    task.task_status = "Incompleted";
+    task.task_status = IN_PROGRESS;
   } catch (error) {
     console.log(error);
   } finally {
@@ -117,6 +116,7 @@ const handleMarkIncompleted = async (task) => {
                 <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
               </div>
               <v-btn
+              v-if="weeklyPlan.stage !== WORK_REPORT_SUBMITTED"
                 size="small"
                 icon="mdi-pencil-outline"
                 variant="text"
@@ -161,9 +161,9 @@ const handleMarkIncompleted = async (task) => {
                   :project_id="project.id"
                   movable
                 >
-                  <template #actions="{ task }">
+                  <template #actions="{ task }" v-if="weeklyPlan.stage !== WORK_REPORT_SUBMITTED">
                     <v-btn
-                      v-if="task.task_status !== 'Completed'"
+                      v-if="task.task_status !== COMPLETED"
                       :loading="loadingStatusChangeId === task.id"
                       :disabled="loadingStatusChangeId === task.id"
                       variant="outlined"
@@ -178,12 +178,11 @@ const handleMarkIncompleted = async (task) => {
                       :loading="loadingStatusChangeId === task.id"
                       :disabled="loadingStatusChangeId === task.id"
                       variant="tonal"
-                      color="success"
+                      color="warning"
                       size="small"
-                      disabled
-                      icon="mdi-checkbox-marked-circle-outline"
-                      @click="handleMarkIncompleted(task)"
-                    ></v-btn>
+                      rounded="lg"
+                      @click="handleMarkInProgress(task)"
+                    >WIP</v-btn>
                   </template>
                 </TaskCard>
               </v-list-item>
