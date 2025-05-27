@@ -1,3 +1,60 @@
+<script setup>
+  import { reactive } from "vue";
+  import request from "@/plugins/axios";
+  import { ref } from "vue";
+  import { useUserStore } from "@/stores/user";
+  import { requiredRule, requiredArrayRule } from "@/utils/formRules";
+import { CREATE_GROUP } from "@/constants/apis";
+import { useRoute } from "vue-router";
+const route = useRoute();
+  const formRef = ref(null);
+  
+  const { user } = useUserStore();
+  const props = defineProps({
+    title: String,
+    data: Object,
+  });
+  
+  const form = reactive({
+    name: null,
+    description:  null,
+  });
+  // watch(() => props.data, () => {
+  //   if(props.data){
+  //     form.name = props.data.project_name || null;
+  //     form.description = props.data.description || null;
+  //   }
+  // });
+  const tab = ref(null);
+  
+  const emit = defineEmits(["close"]);
+  const close = () => {
+    formRef.value.reset();
+    emit("close");
+  };
+  const submit = async () => {
+    const { valid } = await formRef.value.validate();
+    if (!valid) {
+      return;
+    }
+    try {
+      const data = {
+        ...props.data,
+        group_name: form.name,
+        description: form.description,
+       project: route.params.project_id,
+      };
+      const res = await request.post(CREATE_GROUP, data);
+      emit("success");
+      formRef.value.reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  </script>
+  
+
 <template>
     <v-navigation-drawer location="right" temporary width="800">
       <v-card variant="flat">
@@ -14,6 +71,7 @@
           <v-form ref="formRef">
             <div class="d-flex flex-column gap-4">
               <v-text-field
+              validate-on="submit"
               autofocus
                 v-model="form.name"
                 variant="underlined"
@@ -50,61 +108,4 @@
       </v-card>
     </v-navigation-drawer>
   </template>
-  <script setup>
-  import { reactive } from "vue";
-  import request from "@/plugins/axios";
-  import { ref } from "vue";
-  import { useUserStore } from "@/stores/user";
-  import { requiredRule, requiredArrayRule } from "@/utils/formRules";
-import { CREATE_GROUP } from "@/constants/apis";
-import { useRoute } from "vue-router";
-const route = useRoute();
-  const formRef = ref(null);
-  
-  const { user } = useUserStore();
-  const props = defineProps({
-    title: String,
-    data: Object,
-  });
-  
-  const form = reactive({
-    name: null,
-    description:  null,
-  });
-  watch(() => props.data, () => {
-    if(props.data){
-      form.name = props.data.project_name || null;
-      form.description = props.data.description || null;
-    }
-  });
-  const tab = ref(null);
-  
-  const emit = defineEmits(["close"]);
-  const close = () => {
-    formRef.value.reset();
-    emit("close");
-  };
-  const submit = async () => {
-    const { valid } = await formRef.value.validate();
-    if (!valid) {
-      return;
-    }
-    try {
-      const data = {
-        ...props.data,
-        group_name: form.name,
-        description: form.description,
-       project: route.params.project_id,
-      };
-      const res = await request.post(CREATE_GROUP, data);
-
-      
-      emit("success");
-      formRef.value.reset();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
-  </script>
   
