@@ -114,7 +114,7 @@ const submit = async () => {
           <v-autocomplete
             clear-on-select
             prepend-inner-icon="mdi-magnify"
-            item-title="email"
+            item-title="name"
             return-object
             multiple
             hide-selected
@@ -138,6 +138,15 @@ const submit = async () => {
             auto-select-first
           >
             <template v-slot:chip="{ props }"> </template>
+            <template v-slot:item="{ props, item }">
+              <v-list-item v-bind="props" :subtitle="item.raw.email">
+                <template v-slot:prepend>
+                  <v-avatar color="primary">
+                    {{ item.raw.name.charAt(0).toUpperCase() }}
+                  </v-avatar>
+                </template>
+              </v-list-item>
+            </template>
           </v-autocomplete>
         </v-form>
         <label for="" class="text-subtitle-2 text-medium-emphasis"
