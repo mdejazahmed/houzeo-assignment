@@ -1,5 +1,6 @@
 <script setup>
 import { useDate } from "vuetify";
+import { COMPLETED } from "@/constants/keys";
 const { task, editable, group_id, project_id } = defineProps({
   task: {
     type: Object,
@@ -50,24 +51,25 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
   />
   <v-card
     v-else
-    :border="task.task_status === 'Completed' ? 'success md dashed' : 'thin dashed'"
+    :border="task.task_status === COMPLETED ? 'opacity-50 success md dashed' : 'thin dashed'"
     variant="outlined"
     class="rounded-lg d-flex flex-column gap-2"
     :hover="editable"
   >
-    <v-card-text @click="editable ? openAddEditTaskDialog() : null">
+    <v-card-text @click="editable ? openAddEditTaskDialog() : null" >
       <div class="d-flex flex-column gap-4">
         <div class="d-flex align-center justify-space-between gap-2">
-          <p class="text-h6">
+          <p class="text-subtitle-1 font-weight-medium">
             {{ task.task }}
           </p>
-          <v-avatar color="blue" size="x-small">
+          <v-avatar color="blue" size="x-small" v-if="task?.assignees?.email">
             {{ task.assignees?.email[0].toUpperCase() }}
           </v-avatar>
         </div>
       </div>
-      <div class="d-flex align-center flex-wrap gap-2 mt-2">
+      <div class="d-flex align-center flex-wrap gap-2 mt-2" v-if="task?.due_date || task?.duration || task?.task_priority">
         <v-chip
+        v-if="task.due_date"
           border="thin dashed"
           :text="date.format(task.due_date, 'fullDateWithWeekday')"
           prepend-icon="mdi-calendar-blank-outline"
@@ -79,6 +81,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
         >
         </v-chip>
         <v-chip
+        v-if="task.duration"
           border="thin dashed"
           :text="task.duration"
           prepend-icon="mdi-clock-outline"
@@ -88,14 +91,14 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           class="border-dashed"
         >
         </v-chip>
-        <div class="d-flex align-center gap-2">
+        <div class="d-flex align-center gap-2" v-if="task.task_priority">
           <label for="priority" class="text-label"> Priority: </label>
           <v-chip
-            :text="task.task_priority.text"
+            :text="task.task_priority?.text"
             prepend-icon="mdi-alert-outline"
             label
             density="compact"
-            :color="task.task_priority.color"
+            :color="task.task_priority?.color"
             variant="flat"
             class="border-dashed text-white"
           >
@@ -105,7 +108,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           <label for="priority" class="text-label"> Group: </label>
           <v-chip
             :text="task.project_group?.project_group_name"
-            prepend-icon="mdi-account-group-outline"
+           
             label
             density="compact"
             color="secondary"
