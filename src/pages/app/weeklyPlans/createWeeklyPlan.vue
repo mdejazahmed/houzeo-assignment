@@ -193,9 +193,10 @@ const totalHours= computed(() => {
 <template>
   <v-container>
     <v-row>
-      <v-col>
+      <v-col class="d-flex align-center gap-4">
+        <v-icon size="30" icon="mdi-arrow-left-circle-outline" @click="router.back()"></v-icon>
         <h5 class="text-h5 font-weight-bold">Create Weekly Plan 🚀</h5>
-        <p class="text-subtitle-2 text-medium-emphasis">Create Weekly Plan</p>
+        <p class="text-subtitle-2 text-medium-emphasis">{{ weeklyPlan.week }} ({{ weeklyPlan.stage }})</p>
       </v-col>
     </v-row>
     <v-row>
@@ -300,7 +301,7 @@ const totalHours= computed(() => {
               <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
             </div>
             <div>
-              <label>Total Hours: {{ totalHours }}</label>
+              <label class="text-subtitle-2 text-medium-emphasis">Total Duration: {{ totalHours }} Hours</label>
             </div>
           </v-card-title>
           <v-divider></v-divider>
