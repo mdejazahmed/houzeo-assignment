@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12" sm="6" md="4" lg="6">
-        <h5 class="text-h5">Hello, {{ userStore.getFirstName }} 👋</h5>
+        <h5 class="text-h5">Hello, {{ user.name }} 👋</h5>
         <p class="text-subtitle-2 text-medium-emphasis">
           Keep it up and complete today’s tasks to achieve the highest streak.
         </p>
@@ -56,7 +56,7 @@ import request from "@/plugins/axios";
 import { GET_PROJECTS_LIST } from "@/constants/apis";
 import { useUserStore } from "@/stores/user";
 const userStore = useUserStore()
-const { getFirstName } = userStore
+const { user } = userStore
 const addProjectDialog = reactive({
   show: false,
   title: "Create Project",
