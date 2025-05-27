@@ -1,11 +1,9 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, nextTick } from "vue";
 import { requiredRule } from "@/utils/formRules";
 import { CREATE_TASK, GET_PROJECT_TEAM_LIST } from "@/constants/apis";
 import request from "@/plugins/axios";
-import { useRoute } from "vue-router";
 
-const route = useRoute();
 const { group_id, task, project_id } = defineProps({
   group_id: {
     type: String,
@@ -21,12 +19,27 @@ const { group_id, task, project_id } = defineProps({
   },
 });
 const formRef = ref(null);
+const dialogRef = useTemplateRef("dialogRef");
+const taskRef = useTemplateRef("taskRef");
+nextTick(() => {
+  taskRef.value.focus();
+  if (dialogRef.value) {
+    const dialog = dialogRef.value.$el;
+    if (dialog) {
+      dialog.scrollIntoView({
+        behavior: "smooth",
+        block: "center", // This will center the dialog vertically
+      });
+    }
+  }
+});
+
 const loading = ref(false);
 const emit = defineEmits(["success", "close"]);
 
 const taskForm = reactive({
   task: task?.task || "",
-  task_priority: task?.task_priority.text || "",
+  task_priority: task?.task_priority?.text || "",
   assignee: task?.assignees || null,
   due_date: task?.due_date || "",
   duration: task?.duration || "",
@@ -88,14 +101,14 @@ const getAssigneesList = async (search = "") => {
   }
 };
 
-const addEditTask = async () => {
+const addEditTask = async (payLoadTask) => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
   loading.value = true;
   const data = {
     assignees: taskForm.assignee?.id,
     project_group: group_id,
-    due_date: taskForm.due_date,
+    due_date: taskForm.due_date || null,
     task: taskForm.task,
     task_priority: taskForm.task_priority,
     duration: taskForm.duration,
@@ -105,8 +118,9 @@ const addEditTask = async () => {
   }
   try {
     const res = await request.post(CREATE_TASK, data);
+    const updatedTask = res.data?.detail;
     handleClose();
-    emit("success");
+    emit("success", updatedTask);
   } catch (error) {
     console.log(error);
   } finally {
@@ -120,7 +134,7 @@ const handleClose = () => {
 </script>
 
 <template>
-  <v-card class="rounded-lg" variant="outlined" border="dashed">
+  <v-card ref="dialogRef" class="rounded-lg" variant="outlined" border="dashed">
     <v-card-title
       class="d-flex align-center justify-space-between gap-2 bg-background"
     >
@@ -136,27 +150,28 @@ const handleClose = () => {
     <v-card-text>
       <v-form
         ref="formRef"
-        @submit.prevent="addEditTask"
+        @submit.prevent="() => addEditTask(task)"
         class="d-flex flex-column gap-4"
       >
         <v-text-field
+          ref="taskRef"
           v-model="taskForm.task"
           variant="underlined"
           placeholder="Enter Task Name"
-          @keypress.enter.prevent="addEditTask"
+          @keypress.enter.prevent="() => addEditTask(task)"
           :rules="[requiredRule]"
         ></v-text-field>
         <div class="d-flex gap-4">
           <label for="priority" class="text-subtitle-2 w-10">
             Select priority
           </label>
-          <v-radio-group
-            v-model="taskForm.task_priority"
-            :rules="[requiredRule]"
-          >
-            <v-chip-group v-model="taskForm.task_priority" mandatory  selected-class="white-text">
+          <v-radio-group v-model="taskForm.task_priority">
+            <v-chip-group
+              v-model="taskForm.task_priority"
+              mandatory
+              selected-class="white-text"
+            >
               <v-chip
-             
                 v-for="priority in priorities"
                 :key="priority.value"
                 :text="priority.text"
@@ -182,16 +197,30 @@ const handleClose = () => {
             density="compact"
             placeholder="Enter Name"
             rounded
-            item-title="email"
+            item-title="name"
             return-object
             hide-selected
             @update:search="getAssigneesList"
             closable-chips
             chips
-            :rules="[requiredRule]"
           >
+            <template v-slot:item="{ props, item }">
+              <v-list-item v-bind="props" :subtitle="item.raw.email">
+                <template v-slot:prepend>
+                  <v-avatar color="primary">
+                    {{ item.raw.name?.charAt(0).toUpperCase() }}
+                  </v-avatar>
+                </template>
+              </v-list-item>
+            </template>
             <template v-slot:chip="{ props, item }">
-              <UserChip :user="item.raw" v-bind="props" />
+              <v-chip v-bind="props">
+                <template v-slot:prepend>
+                  <v-avatar color="primary">
+                    {{ item.raw.name?.charAt(0).toUpperCase() }}
+                  </v-avatar>
+                </template>
+              </v-chip>
             </template>
           </v-autocomplete>
         </div>
@@ -201,12 +230,8 @@ const handleClose = () => {
         </div>
         <div class="d-flex gap-4">
           <label for="priority" class="text-subtitle-2 w-10"> Duration </label>
-          <v-radio-group v-model="taskForm.duration" :rules="[requiredRule]">
-            <v-chip-group
-              v-model="taskForm.duration"
-              mandatory
-              :rules="[requiredRule]"
-            >
+          <v-radio-group v-model="taskForm.duration">
+            <v-chip-group v-model="taskForm.duration" mandatory>
               <v-chip
                 v-for="duration in durations"
                 :key="duration.value"
@@ -229,7 +254,7 @@ const handleClose = () => {
         color="primary"
         class="rounded-lg"
         type="submit"
-        @click="addEditTask"
+        @click="() => addEditTask(task)"
         :loading="loading"
         >{{ task?.id ? "Save" : "Add Task" }}</v-btn
       >
