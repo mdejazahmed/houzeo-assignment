@@ -97,7 +97,8 @@ const handleMarkInProgress = async (task) => {
 <template>
   <v-container>
     <v-row>
-      <v-col>
+      <v-col class="d-flex align-center gap-2">
+        <v-icon size="30" icon="mdi-arrow-left-circle-outline" @click="router.back()"></v-icon>
         <h5 class="text-h5 font-weight-bold">
          Weekly Plan 🚀
         </h5>
