@@ -3,11 +3,11 @@
     <v-list>
       <v-list-item  
         :subtitle="user?.email"
-        :title="userStore.getFirstName"
+        :title="user.name"
       >
       <template v-slot:prepend>
           <v-avatar color="secondary">
-            {{userStore.getFirstName.charAt(0).toUpperCase()}}
+            {{user.name.charAt(0).toUpperCase()}}
           </v-avatar>
         </template>
     </v-list-item>
