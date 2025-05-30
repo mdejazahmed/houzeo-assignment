@@ -47,7 +47,13 @@
             </div>
             <div class="d-flex align-center gap-4">
               <label for="deadline" class="text-subtitle-2">Created by</label>
-              <UserChip :user="user" />
+              <v-chip :text="user.name" class="pl-0 pr-2" density="compact">
+                <template v-slot:prepend>
+                  <v-avatar color="primary"  size="20" class="mr-1">
+                    {{ user.name?.charAt(0).toUpperCase() }}
+                  </v-avatar>
+                </template>
+              </v-chip>
             </div>
             <v-tabs v-model="tab">
               <v-tab value="description">Description</v-tab>
@@ -93,7 +99,7 @@ import request from "@/plugins/axios";
 import UserChip from "@/components/chips/UserChip.vue";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
-import { requiredRule, requiredArrayRule,maxLengthRule } from "@/utils/formRules";
+import { requiredRule,maxLengthRule } from "@/utils/formRules";
 
 const formRef = ref(null);
 
