@@ -27,8 +27,8 @@ const { task, editable, group_id, project_id } = defineProps({
 });
 const date = useDate(task.due_date);
 
-const handleCreateTask = (createdTask = {}) => {
-  emit("success", createdTask);
+const handleCreateTask = (updatedTask = {}) => {
+  emit("success", updatedTask);
 };
 
 const emit = defineEmits(["success"]);
@@ -91,7 +91,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           class="border-dashed"
         >
         </v-chip>
-        <div class="d-flex align-center gap-2" v-if="task.task_priority">
+        <!-- <div class="d-flex align-center gap-2" v-if="task.task_priority">
           <label for="priority" class="text-label"> Priority: </label>
           <v-chip
             :text="task.task_priority?.text"
@@ -101,6 +101,17 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
             :color="task.task_priority?.color"
             variant="flat"
             class="border-dashed text-white"
+          >
+          </v-chip>
+        </div> -->
+        <div class="d-flex align-center gap-2" v-if="task.project">
+          <label for="priority" class="text-label"> Project: </label>
+          <v-chip
+            :text="task.project?.project_name"
+            label
+            density="compact"
+            color="primary"
+            variant="flat"
           >
           </v-chip>
         </div>
@@ -116,6 +127,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
           >
           </v-chip>
         </div>
+        
       </div>
     </v-card-text>
     <v-card-actions v-if="movable">
