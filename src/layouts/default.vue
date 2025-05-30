@@ -1,8 +1,8 @@
 <template>
-  <v-layout>
+  <v-layout >
     <NavigationDrawer />
-    <v-main>
-      <v-container>
+    <v-main style="height: 100vh;overflow-y: auto;">
+      <v-container >
         <router-view />
       </v-container>
     </v-main>
