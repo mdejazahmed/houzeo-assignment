@@ -20,6 +20,7 @@ const { tabs } = defineProps({
       variant="text"
       color="blue"
       base-color="label"
+      density="compact"
     >
       {{ tab.title }}
       <span v-if="tab.count"> ({{ tab.count }}) </span>
