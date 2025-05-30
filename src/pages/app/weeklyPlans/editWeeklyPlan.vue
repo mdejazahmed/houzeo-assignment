@@ -222,14 +222,25 @@ const totalHours= computed(() => {
     0
   );
 });
+const handleAddEditTaskSuccess = (updatedTask,task) => {
+  Object.assign(task, updatedTask);
+  // This mutates the original object while maintaining reactivity
+console.log(task);
+
+  getWeeklyPlanDetails();
+};
 </script>
 
 <template>
+  
   <v-container>
     <v-row>
-      <v-col>
+      <v-col class="d-flex align-center gap-4">
+        <v-icon size="30" icon="mdi-arrow-left-circle-outline" @click="router.back()"></v-icon>
+      
         <h5 class="text-h5 font-weight-bold">Edit Weekly Plan 🚀</h5>
-        <p class="text-subtitle-2 text-medium-emphasis">Edit Weekly Plan</p>
+        <p class="text-subtitle-2 text-medium-emphasis">{{ weeklyPlan.week }} ({{ weeklyPlan.stage }})</p>
+      
       </v-col>
     </v-row>
     <v-row>
@@ -272,13 +283,19 @@ const totalHours= computed(() => {
           class="mb-2 rounded-lg"
         >
           <v-list>
-            <v-list-item v-for="task in group.pending_tasks" :key="task.id">
+            <v-list-item v-for="(task,index) in group.pending_tasks" :key="task.id" >
+              <template #prepend>
+                <div class="pr-4">
+                  {{index+1}}
+                </div>
+              </template>
               <TaskCard
                 :task="task"
                 :group_id="group.id"
                 :project_id="selectedProject?.id"
                 :movable="task.flag_can_move_task"
                 editable
+                @success="(updatedTask)=>handleAddEditTaskSuccess(updatedTask,task)"
               >
                 <template #actions="{ task }">
                   <v-btn
@@ -306,7 +323,7 @@ const totalHours= computed(() => {
               @close="addEditTaskDialog.show = false"
               :project_id="selectedProject?.id"
               :group_id="group.id"
-              @success="getPendingTasks(selectedProject)"
+              @success="handleAddEditTaskSuccess"
             />
             <v-list-item>
               <v-btn
@@ -384,16 +401,19 @@ const totalHours= computed(() => {
                       @click="handleMarkCompleted(task)"
                       >Mark Completed</v-btn
                     >
+                    <div  v-else>
+                      <label class="text-subtitle-2  ">Move to: </label>
                     <v-btn
                       :loading="task.status_change_loading"
                       :disabled="task.status_change_loading"
-                      v-else
+                     
                       variant="tonal"
                       color="warning"
                       size="small"
                       rounded="lg"
                       @click="handleMarkInProgress(task)"
                     >WIP</v-btn>
+                    </div>
                     <v-btn v-if="task.task_status !== COMPLETED"
                       :loading="task.loading"
                       :disabled="task.loading"

@@ -49,8 +49,8 @@ const getProjectList = async () => {
 };
 const loadingPendingTasks = ref(false);
 const getPendingTasks = async (selectedProject) => {
+  if (!selectedProject) return;
   loadingPendingTasks.value = true;
-
   try {
     const res = await request.get(
       GET_PROJECT_PENDING_TASKS.replace(":project_id", selectedProject?.id)
@@ -84,7 +84,7 @@ const getWeeklyPlanDetails = async () => {
   }
 };
 onMounted(async () => {
-  getWeeklyPlanDetails();
+  // await getWeeklyPlanDetails();
   await getProjectList();
   selectedProject.value = projectsList.value[0];
   await getPendingTasks(selectedProject.value);
@@ -273,6 +273,8 @@ const totalHours= computed(() => {
               @close="addEditTaskDialog.show = false"
               :project_id="selectedProject?.id"
               :group_id="group.id"
+              min-date="26-05-2025"
+              max-date="31-05-2025"
               @success="getPendingTasks(selectedProject)"
             />
             <v-list-item>
