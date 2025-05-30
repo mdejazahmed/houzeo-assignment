@@ -7,3 +7,6 @@ export const WORK_REPORT_PENDING = 'Work Report Pending'
 export const WORK_REPORT_MISSED = 'Work Report Missed'
 export const IN_PROGRESS = 'In Progress'
 export const COMPLETED = 'Completed'
+export const TODAY_TASKS = 'today_tasks'
+export const WEEK_ALL_TASKS = 'week_all_tasks'
+
