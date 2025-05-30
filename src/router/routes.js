@@ -1,6 +1,7 @@
 
 import authLayout from '@/layouts/auth.vue'
 import defaultLayout from '@/layouts/default.vue'
+import individualLayout from '@/layouts/individual.vue'
 import {ROUTES} from '@/constants/routeKeys'
 
 export const routes = [
@@ -32,6 +33,7 @@ export const routes = [
         component: () => import('@/pages/app/home/project.vue'),
         meta: {
           title: 'Project',
+          layout:individualLayout,
           requiresAuth: true
         }
       },
