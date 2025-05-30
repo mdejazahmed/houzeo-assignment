@@ -4,7 +4,7 @@ import { requiredRule } from "@/utils/formRules";
 import { CREATE_TASK, GET_PROJECT_TEAM_LIST } from "@/constants/apis";
 import request from "@/plugins/axios";
 
-const { group_id, task, project_id } = defineProps({
+const { group_id, task, project_id, minDate, maxDate } = defineProps({
   group_id: {
     type: String,
     required: true,
@@ -16,6 +16,14 @@ const { group_id, task, project_id } = defineProps({
   project_id: {
     type: String,
     required: true,
+  },
+  minDate: {
+    type: String,
+    required: false,
+  },
+  maxDate: {
+    type: String,
+    required: false,
   },
 });
 const formRef = ref(null);
@@ -161,7 +169,7 @@ const handleClose = () => {
           @keypress.enter.prevent="() => addEditTask(task)"
           :rules="[requiredRule]"
         ></v-text-field>
-        <div class="d-flex gap-4">
+        <!-- <div class="d-flex gap-4">
           <label for="priority" class="text-subtitle-2 w-10">
             Select priority
           </label>
@@ -186,7 +194,7 @@ const handleClose = () => {
               ></v-chip>
             </v-chip-group>
           </v-radio-group>
-        </div>
+        </div> -->
         <div class="d-flex gap-4">
           <label for="assignee" class="text-subtitle-2 w-10"> Assignee </label>
           <v-autocomplete
@@ -226,7 +234,12 @@ const handleClose = () => {
         </div>
         <div class="d-flex gap-4">
           <label for="priority" class="text-subtitle-2 w-10"> Due Date </label>
-          <input type="date" v-model="taskForm.due_date" />
+          <input
+            type="date"
+            v-model="taskForm.due_date"
+            :min="minDate"
+            :max="maxDate"
+          />
         </div>
         <div class="d-flex gap-4">
           <label for="priority" class="text-subtitle-2 w-10"> Duration </label>
