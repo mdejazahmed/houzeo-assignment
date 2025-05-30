@@ -41,20 +41,25 @@ const progress = computed(() => {
 
 <template>
   <div>
-    <div class="d-flex align-center justify-space-between gap-2">
-      <div class="text-h6">
-        {{ props.group?.group_name }} <span class="bg-count rounded-xl px-2">{{props.group.pending_tasks?.length}}</span>
-      </div>
-    </div>
+    <v-card class="group-header bg-background d-flex align-center justify-space-between gap-2" variant="flat" >
+      <v-card-title>
+        {{ props.group?.group_name }}
+        <span class="bg-count rounded-xl px-2">{{
+          props.group.pending_tasks?.length
+        }}</span>
+      </v-card-title>
+    </v-card>
 
-    <v-card v-bind="$attrs" class="rounded-lg mt-2">
+    <v-card v-bind="$attrs" class="rounded-lg">
       <v-card-title :title="props.group?.name">
-        <div class="d-flex align-center gap-2 justify-space-between" v-if="props.showProgress">
+        <div
+          class="d-flex align-center gap-2 justify-space-between"
+          v-if="props.showProgress"
+        >
           <v-progress-linear
             height="10"
             :model-value="progress"
             rounded
-
           ></v-progress-linear>
           <span class="text-subtitle-2"
             >{{ props.group?.task_counts?.completed_tasks }} /
@@ -71,9 +76,12 @@ const progress = computed(() => {
 
 <style lang="css" scoped>
 .v-progress-linear:deep(.v-progress-linear__determinate) {
-  
-  background: linear-gradient(90deg, #35D0AF 0%, #6EFEB3 100%);
-
-
+  background: linear-gradient(90deg, #35d0af 0%, #6efeb3 100%);
+}
+.group-header{
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+  padding: 8px;
 }
 </style>
