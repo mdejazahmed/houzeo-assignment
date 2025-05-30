@@ -45,8 +45,7 @@ getProjectDetail();
 </script>
 
 <template>
-  <v-container>
-    <v-row class="d-flex justify-space-between">
+    <v-row class="d-flex justify-space-between bg-background" style="position: sticky; top: 0; z-index: 999;">
       <v-col cols="12" sm="6" md="4" lg="6" class="d-flex gap-2">
         <v-icon size="30" icon="mdi-arrow-left-circle-outline" @click="router.back()"></v-icon>
         <div>
@@ -87,18 +86,19 @@ getProjectDetail();
     </v-row>
 
     <v-row>
-      <v-col v-for="group in project.project_groups" :key="group.id" cols="12">
-        <GroupCard :group="group" variant="flat" :showProgress="true">
+      <v-col  cols="6">
+        <GroupCard class="mb-2 rounded-lg" v-for="group in project.project_groups" :key="group.id" :group="group" variant="flat" :showProgress="true">
           <section>
             <v-list>
               <p class="text-h6">Pending Tasks</p>
-              <v-list-item v-for="task in group?.pending_tasks" :key="task.id" >
-                <TaskCard
+              <v-list-item v-for="(task,index) in group?.pending_tasks" :key="task.id">
+                  <TaskCard
                   :editable="true"
                   :task="task"
                   :group_id="group.id"
                   :project_id="project.id"
                   @success="handleCreateTask"
+                  :index="index"
                 />
               </v-list-item>
               <v-list-item>
@@ -171,5 +171,5 @@ getProjectDetail();
       :data="addMembersDialog.data"
       @success="getProjectDetail"
     />
-  </v-container>
+    
 </template>
