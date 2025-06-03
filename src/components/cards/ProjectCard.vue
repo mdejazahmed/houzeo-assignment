@@ -21,15 +21,7 @@
       }"
     >
       <v-card-title :title="props.project.project_name">
-        <div class="d-flex align-center gap-2 justify-space-between">
-          <v-progress-linear
-            color="green"
-            height="10"
-            model-value="10"
-            rounded
-          ></v-progress-linear>
-          <span class="text-subtitle-2">10%</span>
-        </div>
+        <ProgressBar :total-task="props.project.task_counts.total_tasks" :completed-task="props.project.task_counts.completed_tasks"/>
       </v-card-title>
     
       <v-card-text>
@@ -38,7 +30,7 @@
           <p class="text-medium-emphasis text-truncate">
             {{ props.project.description }}
           </p>
-          <div class="d-flex align-center gap-2">
+          <div class="d-flex align-center flex-wrap gap-2">
             <v-avatar
               v-for="user in props.project.team_members"
               :key="user.id"
@@ -57,6 +49,7 @@
 
 <script setup>
 import { ROUTES } from "@/constants/routeKeys";
+import ProgressBar from "@/components/progressBar/ProgressBar.vue"
 const props = defineProps({
   project: {
     type: Object,

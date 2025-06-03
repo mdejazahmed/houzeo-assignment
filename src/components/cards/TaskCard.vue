@@ -47,7 +47,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
 
 <template>
   <AddEditTask
-    v-if="addEditTaskDialog.id"
+    v-if="addEditTaskDialog.id==task.id"
     :task="task"
     @close="closeAddEditTaskDialog"
     :group_id="group_id"
@@ -87,7 +87,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
         </div>
         <div
           class="d-flex align-center flex-wrap gap-2 mt-2 w-full"
-          v-if="task?.due_date || task?.duration || task?.task_priority"
+         
         >
           <v-chip
             v-if="task.due_date"
@@ -148,7 +148,7 @@ const closeAddEditTaskDialog = () => (addEditTaskDialog.id = null);
             >
             </v-chip>
           </div>
-          <div class="d-flex align-center gap-2 ml-auto">
+          <div class="d-flex align-center gap-2 ml-auto" v-if="movable">
             <slot name="actions" :task="task"></slot>
           </div>
         </div>

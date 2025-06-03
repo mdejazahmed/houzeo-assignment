@@ -55,7 +55,7 @@ export const routes = [
         meta: {
           title: 'Create Weekly Plan',
           requiresAuth: true,
-        
+        layout:individualLayout
         }
       },
     {
@@ -86,6 +86,17 @@ export const routes = [
           title: 'Task List',
           requiresAuth: true,
           layout: defaultLayout,
+        }
+      },
+      // Project History Routes
+    {
+        name: ROUTES.PROJECT_HISTORY.name,
+        path: ROUTES.PROJECT_HISTORY.path,
+        component: () => import('@/pages/app/home/projectHistory.vue'),
+        meta: {
+          title: 'Project History',
+          requiresAuth: true,
+          layout: individualLayout,
         }
       },
     // Not Found Route

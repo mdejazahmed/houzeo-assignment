@@ -32,4 +32,8 @@ export const ROUTES = {
       name: "task_list",
       path: "/task_list",
     },
+    PROJECT_HISTORY: {
+      name: "project_history",
+      path: "/project/:project_id/history",
+    },
 }   

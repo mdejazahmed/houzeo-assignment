@@ -9,7 +9,14 @@ import {
   CHANGE_WEEKLY_PLAN_STAGE,
   MARK_TASK_COMPLETED,
 } from "@/constants/apis";
-import { PENDING, DRAFT, PLAN_SUBMITTED, WORK_REPORT_SUBMITTED, COMPLETED, IN_PROGRESS } from "@/constants/keys";
+import {
+  PENDING,
+  DRAFT,
+  PLAN_SUBMITTED,
+  WORK_REPORT_SUBMITTED,
+  COMPLETED,
+  IN_PROGRESS,
+} from "@/constants/keys";
 import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -90,7 +97,10 @@ onMounted(async () => {
   selectedProject.value = projectsList.value[0];
   await getPendingTasks(selectedProject.value);
 });
-const moveTask = async (task,{ weekly_plan_id, task_id, group_id, project_id }) => {
+const moveTask = async (
+  task,
+  { weekly_plan_id, task_id, group_id, project_id }
+) => {
   task.loading = true;
   try {
     const res = await request.patch(MOVE_TASK, {
@@ -114,12 +124,10 @@ const moveTask = async (task,{ weekly_plan_id, task_id, group_id, project_id }) 
     task.loading = false;
   }
 };
-const removeTask = async (task,{
-  weekly_plan_id,
-  task_id,
-  group_id,
-  project_id,
-}) => {
+const removeTask = async (
+  task,
+  { weekly_plan_id, task_id, group_id, project_id }
+) => {
   task.loading = true;
   try {
     const res = await request.patch(REMOVE_TASK, {
@@ -142,7 +150,7 @@ const removeTask = async (task,{
       const groupIndex = groups.value.findIndex(
         (group) => group.id === group_id
       );
-      groups.value[groupIndex].pending_tasks.push(removedTask);
+      groups.value[groupIndex].pending_tasks.unshift(removedTask);
     }
 
     getWeeklyPlanDetails();
@@ -153,7 +161,7 @@ const removeTask = async (task,{
   }
 };
 const handleMarkCompleted = async (task) => {
- task.status_change_loading = true;
+  task.status_change_loading = true;
   try {
     const res = await request.patch(
       MARK_TASK_COMPLETED.replace(":task_id", task.id),
@@ -169,7 +177,7 @@ const handleMarkCompleted = async (task) => {
   }
 };
 const handleMarkInProgress = async (task) => {
- task.status_change_loading = true;
+  task.status_change_loading = true;
   try {
     const res = await request.patch(
       MARK_TASK_COMPLETED.replace(":task_id", task.id),
@@ -215,259 +223,263 @@ const submit = async (stage) => {
     submitLoading.value = false;
   }
 };
-const totalHours= computed(() => {
+const totalHours = computed(() => {
   if (!weeklyPlan.value?.projects) return 0;
   return weeklyPlan.value.projects.reduce(
-    (total, project) => total + (project.tasks?.reduce((total, task) => total + parseInt(task.duration), 0) || 0),
+    (total, project) =>
+      total +
+      (project.tasks?.reduce(
+        (total, task) => total + parseInt(task.duration),
+        0
+      ) || 0),
     0
   );
 });
-const handleAddEditTaskSuccess = (updatedTask,task) => {
-  Object.assign(task, updatedTask);
-  // This mutates the original object while maintaining reactivity
-console.log(task);
-
-  getWeeklyPlanDetails();
-};
 </script>
 
 <template>
-  
-  <v-container>
-    <v-row>
-      <v-col class="d-flex align-center gap-4">
-        <v-icon size="30" icon="mdi-arrow-left-circle-outline" @click="router.back()"></v-icon>
-      
-        <h5 class="text-h5 font-weight-bold">Edit Weekly Plan 🚀</h5>
-        <p class="text-subtitle-2 text-medium-emphasis">{{ weeklyPlan.week }} ({{ weeklyPlan.stage }})</p>
-      
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" sm="6" class="d-flex flex-column gap-2">
-        <v-card variant="flat" class="rounded-lg">
-          <v-card-title class="d-flex align-center justify-space-between gap-2">
-            <label
-              class="text-subtitle-2 text-medium-emphasis"
-              for="select_project"
-              >Select Project:
-            </label>
-            <v-autocomplete
-              :loading="loadingProjectList"
-              name="select_project"
-              id="select_project"
-              v-model="selectedProject"
-              :items="projectsList"
-              return-object
-              item-title="project_name"
-              variant="outlined"
-              hide-details
-              density="compact"
-              @update:modelValue="getPendingTasks"
-            />
-          </v-card-title>
-        </v-card>
-        <v-skeleton-loader
-          v-if="loadingPendingTasks"
-          type="list-item-two-line"
-        ></v-skeleton-loader>
+  <v-row>
+    <v-col class="d-flex align-center gap-4">
+      <v-icon
+        size="30"
+        icon="mdi-arrow-left-circle-outline"
+        @click="router.back()"
+      ></v-icon>
 
-        <GroupCard
-          v-else
-          variant="flat"
-          v-for="group in project.project_groups"
-          :key="group.id"
-          :group="group"
+      <h5 class="text-h5 font-weight-bold">Edit Weekly Plan 🚀</h5>
+      <p class="text-subtitle-2 text-medium-emphasis">
+        {{ weeklyPlan.week }} ({{ weeklyPlan.stage }})
+      </p>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col cols="12" sm="6" class="d-flex flex-column gap-2">
+      <v-card variant="flat" class="rounded-lg">
+        <v-card-title class="d-flex align-center justify-space-between gap-2">
+          <label
+            class="text-subtitle-2 text-medium-emphasis"
+            for="select_project"
+            >Select Project:
+          </label>
+          <v-autocomplete
+            :loading="loadingProjectList"
+            name="select_project"
+            id="select_project"
+            v-model="selectedProject"
+            :items="projectsList"
+            return-object
+            item-title="project_name"
+            variant="outlined"
+            hide-details
+            density="compact"
+            @update:modelValue="getPendingTasks"
+          />
+        </v-card-title>
+      </v-card>
+      <v-skeleton-loader
+        v-if="loadingPendingTasks"
+        type="list-item-two-line"
+      ></v-skeleton-loader>
+
+      <div
+        v-else
+        v-for="group in project.project_groups"
+        :key="group.id"
+      >
+      <h6 class="text-h6 font-weight-bold pa-2">
+        {{ group.group_name }}
+      </h6>
+      <v-card-text class="bg-surface rounded-lg ">
+        <TaskCard
+          v-for="(task, index) in group.pending_tasks"
+          :key="task.id"
+          :task="task"
+          :group_id="group.id"
           :project_id="selectedProject?.id"
-          :showProgress="false"
-          class="mb-2 rounded-lg"
+          :movable="task.flag_can_move_task"
+          editable
+          @success="
+            (updatedTask) => {
+              Object.assign(task, updatedTask);
+            }
+          "
+          :taskIndex="index"
         >
-          <v-list>
-            <v-list-item v-for="(task,index) in group.pending_tasks" :key="task.id" >
-              <template #prepend>
-                <div class="pr-4">
-                  {{index+1}}
-                </div>
-              </template>
+          <template #actions="{ task }">
+            <v-btn
+              :loading="task.loading"
+              :disabled="task.loading"
+              variant="flat"
+              size="small"
+              rounded="lg"
+              color="primary"
+              @click="
+                moveTask(task, {
+                  weekly_plan_id: route.params.weekly_plan_id,
+                  task_id: task.id,
+                  group_id: group.id,
+                  project_id: selectedProject?.id,
+                })
+              "
+              >Move</v-btn
+            >
+          </template>
+        </TaskCard>
+        <AddEditTask
+          v-if="addEditTaskDialog.show"
+          @close="addEditTaskDialog.show = false"
+          :project_id="selectedProject?.id"
+          :group_id="group.id"
+          @success="
+            (task) => {
+              group.pending_tasks.push(task);
+            }
+          "
+        />
+        <v-btn
+          v-if="!addEditTaskDialog.show"
+          variant="outlined"
+          size="small"
+          rounded
+          @click="addEditTaskDialog.show = true"
+          >Add a task</v-btn
+        >
+      </v-card-text>
+        
+      </div>
+    </v-col>
+    <v-col cols="12" sm="6">
+      <v-card
+        variant="flat"
+        class="rounded-lg"
+        :loading="loadingWeeklyPlan"
+        style="top: 16px; position: sticky"
+      >
+        <v-card-title class="d-flex align-center justify-space-between gap-2">
+          <div>
+            {{ weeklyPlan.week }}
+            <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
+          </div>
+          <div>
+            <label class="text-subtitle-2 text-medium-emphasis"
+              >Total Duration: {{ totalHours }} Hours</label
+            >
+          </div>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text
+          style="
+            min-height: calc(100vh - 160px);
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+          "
+        >
+          <div
+            v-if="!weeklyPlan?.projects?.length"
+            class="d-flex flex-column align-center justify-center"
+          >
+            <h6 class="text-h6 text-primary">Move tasks here</h6>
+            <v-img
+              src="@/assets/emptyStates/no_tasks.svg"
+              width="50%"
+              cover
+            ></v-img>
+            <p class="text-subtitle-2 text-medium-emphasis">
+              Currently there are no tasks for this week
+            </p>
+          </div>
+          <v-list
+            v-else
+            v-for="project in weeklyPlan.projects"
+            :key="project.id"
+          >
+            <p class="text-h6">{{ project.project_name }}</p>
+            <v-list-item v-for="(task, index) in project.tasks" :key="task.id">
               <TaskCard
                 :task="task"
-                :group_id="group.id"
-                :project_id="selectedProject?.id"
-                :movable="task.flag_can_move_task"
-                editable
-                @success="(updatedTask)=>handleAddEditTaskSuccess(updatedTask,task)"
+                :group_id="task.project_group?.id"
+                :project_id="project.project_id"
+                movable
+                :taskIndex="index"
               >
                 <template #actions="{ task }">
                   <v-btn
-                    :loading="task.loading"
-                    :disabled="task.loading"
-                    variant="flat"
+                    :loading="task.status_change_loading"
+                    :disabled="task.status_change_loading"
+                    v-if="task.task_status !== 'Completed'"
+                    variant="outlined"
+                    color="success"
                     size="small"
                     rounded="lg"
-                    color="primary"
-                    @click="
-                      moveTask(task,{
-                        weekly_plan_id: route.params.weekly_plan_id,
-                        task_id: task.id,
-                        group_id: group.id,
-                        project_id: selectedProject?.id,
-                      })
-                    "
-                    >Move</v-btn
+                    @click="handleMarkCompleted(task)"
+                    >Mark Completed</v-btn
                   >
-                </template>
-              </TaskCard>
-            </v-list-item>
-            <AddEditTask
-              v-if="addEditTaskDialog.show"
-              @close="addEditTaskDialog.show = false"
-              :project_id="selectedProject?.id"
-              :group_id="group.id"
-              @success="handleAddEditTaskSuccess"
-            />
-            <v-list-item>
-              <v-btn
-                v-if="!addEditTaskDialog.show"
-                variant="outlined"
-                size="small"
-                rounded
-                @click="addEditTaskDialog.show = true"
-                >Add a task</v-btn
-              >
-            </v-list-item>
-          </v-list>
-        </GroupCard>
-      </v-col>
-      <v-col cols="12" sm="6">
-        <v-card
-          variant="flat"
-          class="rounded-lg"
-          :loading="loadingWeeklyPlan"
-          style="top: 16px; position: sticky"
-        >
-        <v-card-title class="d-flex align-center justify-space-between gap-2">
-            <div>
-              {{ weeklyPlan.week }}
-              <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
-            </div>
-            <div>
-              <label class="text-subtitle-2 text-medium-emphasis">Total Duration: {{ totalHours }} Hours</label>
-            </div>
-          </v-card-title>
-          <v-divider></v-divider>
-          <v-card-text
-            style="
-              min-height: calc(100vh - 160px);
-              max-height: calc(100vh - 120px);
-              overflow-y: auto;
-            "
-          >
-            <div
-              v-if="!weeklyPlan?.projects?.length"
-              class="d-flex flex-column align-center justify-center"
-            >
-              <h6 class="text-h6 text-primary">Move tasks here</h6>
-              <v-img
-                src="@/assets/emptyStates/no_tasks.svg"
-                width="50%"
-                cover
-              ></v-img>
-              <p class="text-subtitle-2 text-medium-emphasis">
-                Currently there are no tasks for this week
-              </p>
-            </div>
-            <v-list
-              v-else
-              v-for="project in weeklyPlan.projects"
-              :key="project.id"
-            >
-              <p class="text-h6">{{ project.project_name }}</p>
-              <v-list-item v-for="task in project.tasks" :key="task.id">
-                <TaskCard
-                  :task="task"
-                  :group_id="task.project_group?.id"
-                  :project_id="project.project_id"
-                  movable
-                >
-                  <template #actions="{ task }">
+                  <div v-else>
+                    <label class="text-subtitle-2">Move to: </label>
                     <v-btn
                       :loading="task.status_change_loading"
                       :disabled="task.status_change_loading"
-                      v-if="task.task_status !== 'Completed'"
-                      variant="outlined"
-                      color="success"
-                      size="small"
-                      rounded="lg"
-                      @click="handleMarkCompleted(task)"
-                      >Mark Completed</v-btn
-                    >
-                    <div  v-else>
-                      <label class="text-subtitle-2  ">Move to: </label>
-                    <v-btn
-                      :loading="task.status_change_loading"
-                      :disabled="task.status_change_loading"
-                     
                       variant="tonal"
                       color="warning"
                       size="small"
                       rounded="lg"
                       @click="handleMarkInProgress(task)"
-                    >WIP</v-btn>
-                    </div>
-                    <v-btn v-if="task.task_status !== COMPLETED"
-                      :loading="task.loading"
-                      :disabled="task.loading"
-                      variant="flat"
-                      color="error"
-                      size="small"
-                      rounded="lg"
-                      @click="
-                        removeTask(task,{
-                          weekly_plan_id: route.params.weekly_plan_id,
-                          task_id: task.id,
-                          group_id: task.project_group?.id,
-                          project_id: project.project_id,
-                        })
-                      "
-                      >Remove</v-btn
+                      >WIP</v-btn
                     >
-                  </template>
-                </TaskCard>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-          <v-card-actions v-if="weeklyPlan?.projects?.length">
-            <label class="text-subtitle-2 text-medium-emphasis">
-              <v-icon icon="mdi-information"></v-icon> If plan not submitted
-              before Friday, your weekly plan will move missed plans
-              list.</label
-            >
-            <v-spacer></v-spacer>
-            <v-btn
-              v-if="weeklyPlan.stage == PENDING || weeklyPlan.stage == DRAFT"
-              variant="flat"
-              color="primary"
-              @click="submit(PLAN_SUBMITTED)"
-              :loading="submitLoading"
-              :disabled="submitLoading"
-              rounded="lg"
-              >Submit Weekly Plan</v-btn
-            >
-            <v-btn
-              v-if="weeklyPlan.stage == PLAN_SUBMITTED"
-              variant="flat"
-              color="primary"
-              @click="submit(WORK_REPORT_SUBMITTED)"
-              :loading="submitLoading"
-              :disabled="submitLoading"
-              rounded="lg"
-              >Submit Work Report</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+                  </div>
+                  <v-btn
+                    v-if="task.task_status !== COMPLETED"
+                    :loading="task.loading"
+                    :disabled="task.loading"
+                    variant="flat"
+                    color="error"
+                    size="small"
+                    rounded="lg"
+                    @click="
+                      removeTask(task, {
+                        weekly_plan_id: route.params.weekly_plan_id,
+                        task_id: task.id,
+                        group_id: task.project_group?.id,
+                        project_id: project.project_id,
+                      })
+                    "
+                    >Remove</v-btn
+                  >
+                </template>
+              </TaskCard>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions v-if="weeklyPlan?.projects?.length">
+          <label class="text-subtitle-2 text-medium-emphasis">
+            <v-icon icon="mdi-information"></v-icon> If plan not submitted
+            before Friday, your weekly plan will move missed plans list.</label
+          >
+          <v-spacer></v-spacer>
+          <v-btn
+            v-if="weeklyPlan.stage == PENDING || weeklyPlan.stage == DRAFT"
+            variant="flat"
+            color="primary"
+            @click="submit(PLAN_SUBMITTED)"
+            :loading="submitLoading"
+            :disabled="submitLoading"
+            rounded="lg"
+            >Submit Weekly Plan</v-btn
+          >
+          <v-btn
+            v-if="weeklyPlan.stage == PLAN_SUBMITTED"
+            variant="flat"
+            color="primary"
+            @click="submit(WORK_REPORT_SUBMITTED)"
+            :loading="submitLoading"
+            :disabled="submitLoading"
+            rounded="lg"
+            >Submit Work Report</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <style lang="scss" scoped></style>

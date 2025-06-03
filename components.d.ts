@@ -19,6 +19,8 @@ declare module 'vue' {
     GoogleLogin: typeof import('./src/components/googleLogin/GoogleLogin.vue')['default']
     GroupCard: typeof import('./src/components/cards/GroupCard.vue')['default']
     NavigationDrawer: typeof import('./src/components/layouts/NavigationDrawer.vue')['default']
+    NoTasks: typeof import('./src/components/emptyStates/NoTasks.vue')['default']
+    ProgressBar: typeof import('./src/components/progressBar/ProgressBar.vue')['default']
     ProjectCard: typeof import('./src/components/cards/ProjectCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

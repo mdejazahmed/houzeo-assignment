@@ -13,6 +13,7 @@ import request from "@/plugins/axios";
 import AddEditTask from "@/components/dialogs/AddEditTask.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ROUTES } from "@/constants/routeKeys";
+import NoTasks from "@/components/emptyStates/NoTasks.vue";
 const route = useRoute();
 const router = useRouter();
 const project = ref({});
@@ -84,15 +85,17 @@ const getWeeklyPlanDetails = async () => {
   }
 };
 onMounted(async () => {
-  // await getWeeklyPlanDetails();
+  await getWeeklyPlanDetails();
   await getProjectList();
   selectedProject.value = projectsList.value[0];
   await getPendingTasks(selectedProject.value);
 });
-const moveTask = async (task,{ weekly_plan_id, task_id, group_id, project_id }) => {
+const moveTask = async (
+  task,
+  { weekly_plan_id, task_id, group_id, project_id }
+) => {
   task.loading = true;
-  console.log(task);
-  
+
   try {
     const res = await request.patch(MOVE_TASK, {
       weekly_plan_id,
@@ -108,7 +111,7 @@ const moveTask = async (task,{ weekly_plan_id, task_id, group_id, project_id }) 
       moveItemGroupIndex
     ].pending_tasks.findIndex((task) => task.id === task_id);
     groups.value[moveItemGroupIndex].pending_tasks.splice(moveItemIndex, 1);
-    getWeeklyPlanDetails();
+    // getWeeklyPlanDetails();
   } catch (error) {
     console.log(error);
   } finally {
@@ -143,10 +146,10 @@ const removeTask = async ({
       const groupIndex = groups.value.findIndex(
         (group) => group.id === group_id
       );
-      groups.value[groupIndex].pending_tasks.push(removedTask);
+      groups.value[groupIndex].pending_tasks.unshift(removedTask);
     }
 
-    getWeeklyPlanDetails();
+    // getWeeklyPlanDetails();
   } catch (error) {
     console.log(error);
   } finally {
@@ -181,10 +184,15 @@ const submitWeeklyPlan = async () => {
     submitWeeklyPlanLoading.value = false;
   }
 };
-const totalHours= computed(() => {
+const totalHours = computed(() => {
   if (!weeklyPlan.value?.projects) return 0;
   return weeklyPlan.value.projects.reduce(
-    (total, project) => total + (project.tasks?.reduce((total, task) => total + parseInt(task.duration), 0) || 0),
+    (total, project) =>
+      total +
+      (project.tasks?.reduce(
+        (total, task) => total + parseInt(task.duration),
+        0
+      ) || 0),
     0
   );
 });
@@ -192,16 +200,22 @@ const totalHours= computed(() => {
 
 <template>
   <v-container>
-    <v-row>
+    <v-row style="position: sticky; top: 0; z-index: 99" class="bg-background">
       <v-col class="d-flex align-center gap-4">
-        <v-icon size="30" icon="mdi-arrow-left-circle-outline" @click="router.back()"></v-icon>
+        <v-icon
+          size="30"
+          icon="mdi-arrow-left-circle-outline"
+          @click="router.back()"
+        ></v-icon>
         <h5 class="text-h5 font-weight-bold">Create Weekly Plan 🚀</h5>
-        <p class="text-subtitle-2 text-medium-emphasis">{{ weeklyPlan.week }} ({{ weeklyPlan.stage }})</p>
+        <p class="text-subtitle-2 text-medium-emphasis">
+          {{ weeklyPlan.week }} ({{ weeklyPlan.stage }})
+        </p>
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="6" class="d-flex flex-column gap-2">
-        <v-card variant="flat" class="rounded-lg">
+      <v-col cols="12" sm="6" class="d-flex flex-column gap-2" >
+        <v-card variant="flat" class="rounded-lg" style="position: sticky; top: 55.98px; z-index: 999">
           <v-card-title class="d-flex align-center justify-space-between gap-2">
             <label
               class="text-subtitle-2 text-medium-emphasis"
@@ -239,13 +253,19 @@ const totalHours= computed(() => {
           class="mb-2 rounded-lg"
         >
           <v-list>
-            <v-list-item v-for="task in group.pending_tasks" :key="task.id">
+            <v-list-item v-for="task,taskIndex in group.pending_tasks" :key="task.id">
               <TaskCard
                 :task="task"
                 :group_id="group.id"
                 :project_id="selectedProject?.id"
                 :movable="task.flag_can_move_task"
+                :taskIndex="taskIndex"
                 editable
+                @success="
+                  (updatedTask) => {
+                    Object.assign(task, updatedTask);
+                  }
+                "
               >
                 <template #actions="{ task }">
                   <v-btn
@@ -256,7 +276,7 @@ const totalHours= computed(() => {
                     rounded="lg"
                     color="primary"
                     @click="
-                      moveTask(task,{
+                      moveTask(task, {
                         weekly_plan_id: route.params.weekly_plan_id,
                         task_id: task.id,
                         group_id: group.id,
@@ -269,21 +289,25 @@ const totalHours= computed(() => {
               </TaskCard>
             </v-list-item>
             <AddEditTask
-              v-if="addEditTaskDialog.show"
-              @close="addEditTaskDialog.show = false"
+              v-if="addEditTaskDialog.group==group.id"
+              @close="addEditTaskDialog.group = null"
               :project_id="selectedProject?.id"
               :group_id="group.id"
               min-date="26-05-2025"
               max-date="31-05-2025"
-              @success="getPendingTasks(selectedProject)"
+              @success="
+                (task) => {
+                  group.pending_tasks.push(task);
+                }
+              "
             />
             <v-list-item>
               <v-btn
-                v-if="!addEditTaskDialog.show"
+                v-if="addEditTaskDialog.group!=group.id"
                 variant="outlined"
                 size="small"
                 rounded
-                @click="addEditTaskDialog.show = true"
+                @click="addEditTaskDialog.group = group.id"
                 >Add a task</v-btn
               >
             </v-list-item>
@@ -295,15 +319,17 @@ const totalHours= computed(() => {
           variant="flat"
           class="rounded-lg"
           :loading="loadingWeeklyPlan"
-          style="top: 16px; position: sticky"
+        
         >
-          <v-card-title class="d-flex align-center justify-space-between gap-2">
+          <v-card-title class="d-flex align-center justify-space-between gap-2" >
             <div>
               {{ weeklyPlan.week }}
               <span class="bg-count rounded-xl px-2">{{ totalTasks }}</span>
             </div>
             <div>
-              <label class="text-subtitle-2 text-medium-emphasis">Total Duration: {{ totalHours }} Hours</label>
+              <label class="text-subtitle-2 text-medium-emphasis"
+                >Total Duration: {{ totalHours }} Hours</label
+              >
             </div>
           </v-card-title>
           <v-divider></v-divider>
@@ -314,31 +340,19 @@ const totalHours= computed(() => {
               overflow-y: auto;
             "
           >
-            <div
-              v-if="!weeklyPlan?.projects?.length"
-              class="d-flex flex-column align-center justify-center"
-            >
-              <h6 class="text-h6 text-primary">Move tasks here</h6>
-              <v-img
-                src="@/assets/emptyStates/no_tasks.svg"
-                width="50%"
-                cover
-              ></v-img>
-              <p class="text-subtitle-2 text-medium-emphasis">
-                Currently there are no tasks for this week
-              </p>
-            </div>
+            <NoTasks v-if="!weeklyPlan?.projects?.length"/>
             <v-list
               v-else
               v-for="project in weeklyPlan.projects"
               :key="project.id"
             >
               <p class="text-h6">{{ project.project_name }}</p>
-              <v-list-item v-for="task in project.tasks" :key="task.id">
+              <v-list-item v-for="task,taskIndex in project.tasks" :key="task.id">
                 <TaskCard
                   :task="task"
                   :group_id="task.group_id"
                   :project_id="project.id"
+                  :taskIndex="taskIndex"
                   movable
                 >
                   <template #actions="{ task }">

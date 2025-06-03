@@ -9,6 +9,7 @@ export const DELETE_PROJECT = '/project/delete_project/:project_id'
 export const GET_PROJECT = '/project/get_project/details/:project_id'
 export const ADD_TEAM_MEMBER = '/project/add_member_to_project/'
 export const REMOVE_TEAM_MEMBER = '/project/remove_member_to_project/:member_assigned_project_id/'
+export const GET_WEEKLY_PLAN_HISTORY_OF_PROJECT = '/project/get_project_weekly_plan_task_history/:project_id/'
 //group
 export const CREATE_GROUP = '/project/create_projects_group/'
 export const GET_GROUPS = '/project/get_projects_group/list/:project_id'
@@ -20,6 +21,7 @@ export const MARK_TASK_COMPLETED = '/project/task/update_task_status/:task_id/'
 export const GET_TASK_LIST = '/project/get_weekly_task_list/'
 
 //weekly plan
+export const GET_WEEKLY_PLAN_OF_PROJECT = '/project/get_project_weekly_task/list/:project_id/'
 export const CHECK_USER_WEEKLY_PLAN = '/project/check_user_weekly_plan_details/'
 export const GET_WEEKLY_PLAN_TABS = '/project/weekly_plan/get_project_weekly_plan/tab_list/'
 export const GET_WEEKLY_PLAN_LIST = '/project/weekly_plan/get_weekly_plan/list/'
