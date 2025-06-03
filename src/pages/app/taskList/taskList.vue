@@ -1,5 +1,6 @@
 <script setup>
 import { GET_TASK_LIST, MARK_TASK_COMPLETED } from "@/constants/apis";
+
 import request from "@/plugins/axios";
 import TaskCard from "@/components/cards/TaskCard.vue";
 import {
@@ -12,7 +13,7 @@ const loading = ref(false);
 const loadingStatusChangeId = ref(null);
 const tasks = ref({});
 const task_list_type = ref("week_all_tasks");
-const getprojectList = async () => {
+const getTasksList = async () => {
   
   loading.value = true;
   try {
@@ -28,7 +29,7 @@ const getprojectList = async () => {
     loading.value = false;
   }
 };
-getprojectList();
+getTasksList();
 const handleMarkCompleted = async (task, taskIndex) => {
   loadingStatusChangeId.value = task.id;
   try {
@@ -98,7 +99,7 @@ const progress = computed(() => {
           v-model="task_list_type"
           :false-value="TODAY_TASKS"
           :true-value="WEEK_ALL_TASKS"
-          @update:model-value="getprojectList()"
+          @update:model-value="getTasksList"
         ></v-switch>
         <span class="text-subtitle-1" :class="task_list_type === WEEK_ALL_TASKS ? 'font-weight-medium' : ''">This Week’s Todos</span>
       </v-col>

@@ -65,6 +65,7 @@ export const routes = [
         meta: {
           title: 'Edit Weekly Plan',
           requiresAuth: true,
+          layout: individualLayout,
         }
       },
     {

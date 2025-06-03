@@ -4,7 +4,7 @@ const router = useRouter()
 
 // Go Home function
 const goHome = () => {
-  router.push('/')
+  router.push('/login')
 }
 </script>
 

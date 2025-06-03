@@ -4,6 +4,7 @@
       timeout="2000"
       :color="snackbarStore.color === 'success' ? '#323741' : '#323741'"
       class="center-snackbar"
+      location="right"
   
     >
       <div class="snackbarDiv">
@@ -25,7 +26,8 @@ const snackbarStore= useSnackbarStore()
 <style lang="scss" scoped>
 .center-snackbar {
   /* margin: auto; */
-  transform: translateY(-10%);
+  // transform: translateX(30%);
+  // transform: translateY(-60%);
   border-radius: 4px;
 
   .snackbarDiv {

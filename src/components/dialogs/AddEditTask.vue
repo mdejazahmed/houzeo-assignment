@@ -51,6 +51,7 @@ const taskForm = reactive({
   assignee: task?.assignees || null,
   due_date: task?.due_date || "",
   duration: task?.duration || "",
+  assignees: task?.assignees || null,
 });
 const priorities = ref([
   {
@@ -113,14 +114,16 @@ const addEditTask = async (payLoadTask) => {
   const { valid } = await formRef.value.validate();
   if (!valid) return;
   loading.value = true;
+  
   const data = {
-    assignees: taskForm.assignee?.id,
+    assignees: taskForm.assignees?.id,
     project_group: group_id,
     due_date: taskForm.due_date || null,
     task: taskForm.task,
     task_priority: taskForm.task_priority,
     duration: taskForm.duration,
   };
+
   if (task?.id) {
     data.id = task?.id;
   }
@@ -142,7 +145,7 @@ const handleClose = () => {
 </script>
 
 <template>
-  <v-card ref="dialogRef" class="rounded-lg" variant="outlined" border="dashed">
+  <v-card ref="dialogRef" class="rounded-lg mb-2" variant="outlined" border="dashed" >
     <v-card-title
       class="d-flex align-center justify-space-between gap-2 bg-background"
     >
@@ -169,37 +172,11 @@ const handleClose = () => {
           @keypress.enter.prevent="() => addEditTask(task)"
           :rules="[requiredRule]"
         ></v-text-field>
-        <!-- <div class="d-flex gap-4">
-          <label for="priority" class="text-subtitle-2 w-10">
-            Select priority
-          </label>
-          <v-radio-group v-model="taskForm.task_priority">
-            <v-chip-group
-              v-model="taskForm.task_priority"
-              mandatory
-              selected-class="white-text"
-            >
-              <v-chip
-                v-for="priority in priorities"
-                :key="priority.value"
-                :text="priority.text"
-                :value="priority.value"
-                label
-                :variant="
-                  taskForm.task_priority == priority.value ? 'flat' : 'outlined'
-                "
-                :color="priority.color"
-                :prepend-icon="priority.icon"
-                density="compact"
-              ></v-chip>
-            </v-chip-group>
-          </v-radio-group>
-        </div> -->
         <div class="d-flex gap-4">
-          <label for="assignee" class="text-subtitle-2 w-10"> Assignee </label>
+          <label for="assignee" class="text-subtitle-2"> Assignee </label>
           <v-autocomplete
             hide-no-data
-            v-model.trim="taskForm.assignee"
+            v-model.trim="taskForm.assignees"
             :items="assigneesList"
             variant="underlined"
             density="compact"
@@ -233,7 +210,7 @@ const handleClose = () => {
           </v-autocomplete>
         </div>
         <div class="d-flex gap-4">
-          <label for="priority" class="text-subtitle-2 w-10"> Due Date </label>
+          <label for="priority" class="text-subtitle-2"> Due Date </label>
           <input
             type="date"
             v-model="taskForm.due_date"
@@ -242,7 +219,7 @@ const handleClose = () => {
           />
         </div>
         <div class="d-flex gap-4">
-          <label for="priority" class="text-subtitle-2 w-10"> Duration </label>
+          <label for="priority" class="text-subtitle-2"> Duration </label>
           <v-radio-group v-model="taskForm.duration">
             <v-chip-group v-model="taskForm.duration" mandatory>
               <v-chip
@@ -278,9 +255,6 @@ const handleClose = () => {
   </v-card>
 </template>
 <style scoped>
-.w-10 {
-  width: 10%;
-}
 .white-text {
   color: white !important;
 }
