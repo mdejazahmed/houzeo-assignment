@@ -236,8 +236,10 @@ const handleClose = () => {
                       :label="language.text"
                       :value="language"
                       v-model="user.selectedLanguages"
-                      hide-details="auto"
+                      hide-details
                       color="primary"
+                      density="compact"
+                      :rules="[requiredArrayRule]"
                     />
                   </div>
                 </v-col>
