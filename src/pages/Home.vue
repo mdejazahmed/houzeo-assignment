@@ -40,7 +40,7 @@ const userForm = ref(false);
 <template>
   <v-row>
     <v-col cols="12" sm="6" md="4" lg="6">
-      <h5 class="text-h5">Hello, Masnsi 👋</h5>
+      <h5 class="text-h5">Hello, Mansi 👋</h5>
       <p class="text-subtitle-2 text-medium-emphasis">Welcome to Houzeo.</p>
     </v-col>
     <v-col
