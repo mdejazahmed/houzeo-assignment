@@ -5,8 +5,8 @@ export const requiredArrayRule = (value) => {
   return (Array.isArray(value) && value.length > 0) || 'At least one item is required'
 }
 export const emailRule = (value) => {
-  const emailRegex = /^[^\s@]+@(codenicely\.in|gimbooks\.in)$/.test(value)
-  return emailRegex || 'Please enter a valid email address from codenicely.in or gimbooks.in'
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  return emailRegex || 'Please enter a valid email address';
 }
 
 export const passwordRule = (value) => {
@@ -19,7 +19,7 @@ export const passwordRule = (value) => {
 }
 
 export const phoneRule = (value) => {
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/.test(value)
+  const phoneRegex = /^\+?[1-9]\d{1,10}$/.test(value)
   return phoneRegex || 'Please enter a valid phone number'
 }
 
@@ -61,17 +61,3 @@ export const customRule = (message) => (value) => {
   return value || message
 }
 
-// Example usage:
-// const rules = [
-//   requiredRule,
-//   minLengthRule(5),
-//   maxLengthRule(50),
-//   customRule('Custom error message')
-// ]
-
-// Usage in Vuetify form:
-// <v-text-field
-//   v-model="email"
-//   :rules="[requiredRule, emailRule]"
-//   label="Email"
-// ></v-text-field>

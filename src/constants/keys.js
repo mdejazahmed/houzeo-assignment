@@ -1,7 +1,0 @@
-export const PENDING = 'Pending'
-export const DRAFT = 'Draft'
-export const PLAN_SUBMITTED = 'Plan Submitted'
-export const MISSED_PLAN = 'Missed Plan'
-export const WORK_REPORT_SUBMITTED = 'Work Report Submitted'
-export const WORK_REPORT_PENDING = 'Work Report Pending'
-export const WORK_REPORT_MISSED = 'Work Report Missed'

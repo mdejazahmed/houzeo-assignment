@@ -12,7 +12,6 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { useThemeStore } from '@/stores/theme'
 import {mdi} from 'vuetify/iconsets/mdi'
-import {customIcons} from '@/iconsets/index.ts'
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
@@ -23,7 +22,7 @@ export default createVuetify({
         colors: {
           background: '#F3F5F9',
           surface: '#FFFFFF',
-          primary: '#1A1C48',
+          primary: '#0b5aa5',
           secondary: '#C8BCF6',
           accent: '#82B1FF',
           error: '#FF5252',
@@ -44,7 +43,7 @@ export default createVuetify({
         colors: {
           background: '#121212',
           surface: '#1E1E1E',
-          primary: '#BB86FC',
+          primary: '#f4a55a', /* Inverted color of #0b5aa5 */
           secondary: '#C8BCF6',
           accent: '#018786',
           error: '#CF6679',
@@ -59,13 +58,6 @@ export default createVuetify({
           count: '#4764FC',
         },
       },
-    },
-  },
-  icons: {
-    defaultSet: "mdi",
-    sets: {
-      mdi,
-      custom: customIcons,
     },
   },
 })

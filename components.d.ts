@@ -8,23 +8,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AddEditGroupModal: typeof import('./src/components/dialogs/AddEditGroupModal.vue')['default']
-    AddEditProjectModal: typeof import('./src/components/dialogs/AddEditProjectModal.vue')['default']
-    AddEditTask: typeof import('./src/components/dialogs/AddEditTask.vue')['default']
-    AddProject: typeof import('./src/components/dialogs/AddProject.vue')['default']
-    CofirmationDialog: typeof import('./src/components/dialogs/CofirmationDialog.vue')['default']
     CustomeTable: typeof import('./src/components/customTable/CustomeTable.vue')['default']
-    DynamicButtons: typeof import('./src/components/buttons/DynamicButtons.vue')['default']
-    GoogleLogin: typeof import('./src/components/googleLogin/GoogleLogin.vue')['default']
-    GroupCard: typeof import('./src/components/cards/GroupCard.vue')['default']
+    HouzeoLogo: typeof import('./src/components/HouzeoLogo.vue')['default']
     NavigationDrawer: typeof import('./src/components/layouts/NavigationDrawer.vue')['default']
-    ProjectCard: typeof import('./src/components/cards/ProjectCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Snackbar: typeof import('./src/components/snackbar/Snackbar.vue')['default']
-    Tabs: typeof import('./src/components/tabs/Tabs.vue')['default']
-    TaskCard: typeof import('./src/components/cards/TaskCard.vue')['default']
     ToggleTheme: typeof import('./src/components/themeToggle/ToggleTheme.vue')['default']
-    UserChip: typeof import('./src/components/chips/UserChip.vue')['default']
+    UserForm: typeof import('./src/components/UserForm.vue')['default']
   }
 }
