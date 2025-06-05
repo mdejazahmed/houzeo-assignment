@@ -1,0 +1,66 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "mobile": "(123) 456-7890",
+      "birthDate": "2022-01-01",
+      "gender": {
+        "text": "Male",
+        "value": "male"
+      },
+      "selectedLanguages": [
+        {
+          "text": "Vue.js",
+          "value": "vue",
+          "icon": "mdi-vuejs",
+          "color": "green"
+        },
+        {
+          "text": "React.js",
+          "value": "react",
+          "icon": "mdi-react",
+          "color": "blue"
+        },
+        {
+          "text": "Angular",
+          "value": "angular",
+          "icon": "mdi-angular",
+          "color": "red"
+        }
+      ],
+      "city": [
+        "New York",
+        "Los Angeles"
+      ],
+      "file": {
+        "name": "red.pdf"
+      }
+    },
+    {
+        "name": "wer",
+        "email": "Rica@gmail.com",
+        "mobile": "(987) 654-53234",
+        "birthDate": "2025-06-07",
+        "gender": {
+          "text": "Female",
+          "value": "female"
+        },
+        "selectedLanguages": [
+          {
+            "text": "React.js",
+            "value": "react",
+            "icon": "mdi-react",
+            "color": "blue"
+          }
+        ],
+        "city": [
+          "Los Angeles"
+        ],
+        "file": {
+            "name": "foo.pdf"
+        }
+    }
+  ]
+}

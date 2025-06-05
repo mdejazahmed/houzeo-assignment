@@ -2,6 +2,9 @@
 import CustomTable from "@/components/customTable/CustomeTable.vue";
 import UserForm from "@/components/UserForm.vue";
 import { useDate } from "vuetify";
+import { onMounted } from "vue";
+import  axiosInstance  from "@/plugins/axios";
+import { GET_USERS } from "@/constants/apis";
 const date = useDate();
 const headers = [
   { title: "Name", key: "name", align: "center" },
@@ -14,20 +17,6 @@ const headers = [
   { title: "File", key: "file", align: "center" },
 ];
 const submittedData = ref([
-  {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    mobile: "(123) 456-7890",
-    birthDate: "2022-01-01",
-    gender: { text: "Male", value: "male" },
-    selectedLanguages: [
-      { text: "Vue.js", value: "vue", icon: "mdi-vuejs", color: "green" },
-      { text: "React.js", value: "react", icon: "mdi-react", color: "blue" },
-      { text: "Angular", value: "angular", icon: "mdi-angular", color: "red" },
-    ],
-    city: ["New York", "Los Angeles"],
-    file: [],
-  },
 ]);
 const addUser = (users) => {
   console.log(users);
@@ -36,6 +25,22 @@ const addUser = (users) => {
   userForm.value = false;
 };
 const userForm = ref(false);
+
+const fetchUsers = async () => {
+  try {
+    const res = await axiosInstance.get(GET_USERS);
+    console.log(res);
+    
+    submittedData.value = res.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// Fetch users on component mount
+onMounted(() => {
+  fetchUsers();
+});
 </script>
 <template>
   <v-row>
@@ -85,7 +90,7 @@ const userForm = ref(false);
       {{ item.city.join(", ") }}
     </template>
     <template #file="{ item }">
-     {{item.file.name}}
+     {{item.file?.name}}
     </template>
   </CustomTable>
 </template>

@@ -2,6 +2,7 @@
 import { ref, reactive, computed, nextTick } from "vue";
 import { requiredRule, emailRule, requiredArrayRule } from "@/utils/formRules";
 import { useDate } from "vuetify";
+import axiosInstance from "@/plugins/axios";
 const emit = defineEmits(["close", "addUser"]);
 const form = ref(null);
 const loading = ref(false);
@@ -57,6 +58,9 @@ const handleSubmit = async () => {
   loading.value = true;
 
   try {
+    const formData = forms;
+    const res = await axiosInstance.post("/users", formData);
+    console.log(res);
     emit("addUser", forms);
   } catch (error) {
     console.log(error);
