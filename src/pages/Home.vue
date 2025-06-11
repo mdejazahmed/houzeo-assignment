@@ -7,9 +7,7 @@ import  axiosInstance  from "@/plugins/axios";
 import { GET_USERS } from "@/constants/apis";
 const date = useDate();
 const headers = [
-  { title: "Name", key: "name", align: "center" },
-  { title: "Email", key: "email", align: "center" },
-  { title: "Mobile", key: "mobile", align: "center" },
+  { title: "Group", key: "groupFields", align: "center" },
   { title: "Birth Date", key: "birthDate", align: "center" },
   { title: "Gender", key: "gender", align: "center" },
   { title: "Languages", key: "selectedLanguages", align: "center" },
@@ -18,9 +16,9 @@ const headers = [
 ];
 const submittedData = ref([
 ]);
-const addUser = (users) => {
-  console.log(users);
-  submittedData.value.push(...users);
+const addUser = (data) => {
+  console.log(data);
+  submittedData.value.push(data);
 
   userForm.value = false;
 };
@@ -30,7 +28,6 @@ const fetchUsers = async () => {
   try {
     const res = await axiosInstance.get(GET_USERS);
     console.log(res);
-    
     submittedData.value = res.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -45,7 +42,7 @@ onMounted(() => {
 <template>
   <v-row>
     <v-col cols="12" sm="6" md="4" lg="6">
-      <h5 class="text-h5">Hello, Masnsi 👋</h5>
+      <h5 class="text-h5">Hello, Mansi 👋</h5>
       <p class="text-subtitle-2 text-medium-emphasis">Welcome to Houzeo.</p>
     </v-col>
     <v-col
@@ -66,8 +63,17 @@ onMounted(() => {
   </v-row>
   <UserForm v-model="userForm" @close="userForm = false" @addUser="addUser" />
   <CustomTable :headers="headers" :items="submittedData">
+  <template #groupFields="{ item }">
+   <ul>
+    <li v-for="group in item.groupFields" :key="group.name">
+     {{group.name}}
+     {{group.email}}
+     {{group.mobile}}
+    </li>
+   </ul>
+  </template>
     <template #gender="{ item }">
-      {{ item.gender.text }}
+      {{ item.gender?.text }}
     </template>
     <template #birthDate="{ item }">
       {{ date.format(item.birthDate, "fullDate") }}
@@ -80,7 +86,6 @@ onMounted(() => {
         :color="lang.color"
         density="compact"
         size="small"
-
       >
         <v-icon :icon="lang.icon"></v-icon>
         {{ lang.text }}

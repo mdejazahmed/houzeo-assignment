@@ -1,11 +1,57 @@
 {
   "users": [
     {
-      "id": "1",
-      "name": "John Doe",
-      "email": "john.doe@example.com",
-      "mobile": "(123) 456-7890",
-      "birthDate": "2022-01-01",
+      "id": 1,
+      "groupFields": [
+        {
+          "name": "John Doe ",
+          "email": "john@example.com",
+          "mobile": "(123) 456-7890"
+        },
+        {
+          "name": "Jane Doe",
+          "email": "jane@example.com",
+          "mobile": "(987) 654-3210"
+        }
+      ],
+      "birthDate": "",
+      "gender": {
+        "text": "Male",
+        "value": "male"
+      },
+      "selectedLanguages": [
+        {
+          "text": "Vue.js",
+          "value": "vue",
+          "icon": "mdi-vuejs",
+          "color": "green"
+        }
+      ],
+      "city": [
+        "New York",
+        "Los Angeles"
+      ],
+      "file": {
+        "name": "dummy.pdf",
+        "size": "2mb",
+        "type": "pdf"
+      }
+    },
+    {
+      "id": "c536",
+      "groupFields": [
+        {
+          "name": "Ejaz Ahmed",
+          "email": "ejaz.ahmed1227@gmail.in",
+          "mobile": "(091) 317-0051"
+        },
+        {
+          "name": "Ejaz Ahmed",
+          "email": "ejaz.ahmed1227@gmail.in",
+          "mobile": "(091) 317-0051"
+        }
+      ],
+      "birthDate": "2025-06-12",
       "gender": {
         "text": "Male",
         "value": "male"
@@ -22,45 +68,58 @@
           "value": "react",
           "icon": "mdi-react",
           "color": "blue"
-        },
-        {
-          "text": "Angular",
-          "value": "angular",
-          "icon": "mdi-angular",
-          "color": "red"
         }
       ],
       "city": [
-        "New York",
-        "Los Angeles"
+        "Philadelphia",
+        "Phoenix"
       ],
       "file": {
-        "name": "red.pdf"
+        "name": "ejaz_resume.pdf",
+        "size": 89953
       }
     },
     {
-        "name": "wer",
-        "email": "Rica@gmail.com",
-        "mobile": "(987) 654-53234",
-        "birthDate": "2025-06-07",
-        "gender": {
-          "text": "Female",
-          "value": "female"
+      "id": "e501",
+      "groupFields": [
+        {
+          "name": "Ejaz Ahmed",
+          "email": "ejaz.ahmed1227@gmail.in",
+          "mobile": "(091) 317-0051"
         },
-        "selectedLanguages": [
-          {
-            "text": "React.js",
-            "value": "react",
-            "icon": "mdi-react",
-            "color": "blue"
-          }
-        ],
-        "city": [
-          "Los Angeles"
-        ],
-        "file": {
-            "name": "foo.pdf"
+        {
+          "name": "Ejaz Ahmed",
+          "email": "ejaz.ahmed1227@gmail.in",
+          "mobile": "(091) 317-0051"
         }
+      ],
+      "birthDate": "2025-06-06",
+      "gender": {
+        "text": "Male",
+        "value": "male"
+      },
+      "selectedLanguages": [
+        {
+          "text": "Vue.js",
+          "value": "vue",
+          "icon": "mdi-vuejs",
+          "color": "green"
+        },
+        {
+          "text": "React.js",
+          "value": "react",
+          "icon": "mdi-react",
+          "color": "blue"
+        }
+      ],
+      "city": [
+        "Philadelphia",
+        "Phoenix"
+      ],
+      "file": {
+        "name": "Ejaz-Ahmed.pdf",
+        "size": 107403
+      }
     }
   ]
 }

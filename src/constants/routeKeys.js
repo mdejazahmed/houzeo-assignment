@@ -4,5 +4,9 @@ export const ROUTES = {
       name: "login",
       path: "/login",
     },  
+    HOME: {
+      name: "home",
+      path: "/home",
+    },  
    
 }   
