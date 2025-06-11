@@ -1,10 +1,12 @@
 <script setup>
+import { ROUTES } from "@/constants/routeKeys";
+import { useRouter } from "vue-router";
 // Navigation
 const router = useRouter()
 
 // Go Home function
 const goHome = () => {
-  router.push('/')
+  router.push({name:ROUTES.HOME.name})
 }
 </script>
 

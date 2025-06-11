@@ -2,11 +2,12 @@
 import CustomTable from "@/components/customTable/CustomeTable.vue";
 import UserForm from "@/components/UserForm.vue";
 import { useDate } from "vuetify";
+import { onMounted } from "vue";
+import  axiosInstance  from "@/plugins/axios";
+import { GET_USERS } from "@/constants/apis";
 const date = useDate();
 const headers = [
-  { title: "Name", key: "name", align: "center" },
-  { title: "Email", key: "email", align: "center" },
-  { title: "Mobile", key: "mobile", align: "center" },
+  { title: "Group", key: "groupFields", align: "center" },
   { title: "Birth Date", key: "birthDate", align: "center" },
   { title: "Gender", key: "gender", align: "center" },
   { title: "Languages", key: "selectedLanguages", align: "center" },
@@ -14,28 +15,29 @@ const headers = [
   { title: "File", key: "file", align: "center" },
 ];
 const submittedData = ref([
-  {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    mobile: "(123) 456-7890",
-    birthDate: "2022-01-01",
-    gender: { text: "Male", value: "male" },
-    selectedLanguages: [
-      { text: "Vue.js", value: "vue", icon: "mdi-vuejs", color: "green" },
-      { text: "React.js", value: "react", icon: "mdi-react", color: "blue" },
-      { text: "Angular", value: "angular", icon: "mdi-angular", color: "red" },
-    ],
-    city: ["New York", "Los Angeles"],
-    file: [],
-  },
 ]);
-const addUser = (users) => {
-  console.log(users);
-  submittedData.value.push(...users);
+const addUser = (data) => {
+  console.log(data);
+  submittedData.value.push(data);
 
   userForm.value = false;
 };
 const userForm = ref(false);
+
+const fetchUsers = async () => {
+  try {
+    const res = await axiosInstance.get(GET_USERS);
+    console.log(res);
+    submittedData.value = res.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// Fetch users on component mount
+onMounted(() => {
+  fetchUsers();
+});
 </script>
 <template>
   <v-row>
@@ -61,8 +63,17 @@ const userForm = ref(false);
   </v-row>
   <UserForm v-model="userForm" @close="userForm = false" @addUser="addUser" />
   <CustomTable :headers="headers" :items="submittedData">
+  <template #groupFields="{ item }">
+   <ul>
+    <li v-for="group in item.groupFields" :key="group.name">
+     {{group.name}}
+     {{group.email}}
+     {{group.mobile}}
+    </li>
+   </ul>
+  </template>
     <template #gender="{ item }">
-      {{ item.gender.text }}
+      {{ item.gender?.text }}
     </template>
     <template #birthDate="{ item }">
       {{ date.format(item.birthDate, "fullDate") }}
@@ -75,7 +86,6 @@ const userForm = ref(false);
         :color="lang.color"
         density="compact"
         size="small"
-
       >
         <v-icon :icon="lang.icon"></v-icon>
         {{ lang.text }}
@@ -85,7 +95,7 @@ const userForm = ref(false);
       {{ item.city.join(", ") }}
     </template>
     <template #file="{ item }">
-     {{item.file.name}}
+     {{item.file?.name}}
     </template>
   </CustomTable>
 </template>

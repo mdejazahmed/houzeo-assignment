@@ -1,9 +1,10 @@
 
 import defaultLayout from '@/layouts/defaultLayout.vue'
+import { ROUTES } from '@/constants/routeKeys'
 export const routes = [
   {
-    path: '/',
-    name: 'Home',
+    path: ROUTES.HOME.path,
+    name: ROUTES.HOME.name,
     component: () => import('@/pages/Home.vue'),
     meta: {
       title: 'Home',

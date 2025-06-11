@@ -42,7 +42,7 @@ const navItems = [
     title: "Home",
     icon: "mdi-home-outline",
     value: "home",
-    to: "/",
+    to: "/home",
   },
 ];
 </script>
