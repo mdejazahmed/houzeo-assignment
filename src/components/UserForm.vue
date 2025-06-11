@@ -68,8 +68,8 @@ const handleSubmit = async () => {
     const formData = {...form,file:{name:form.file?.name,
         size: form.file?.size,
         }};
-    const res = await axiosInstance.post("/users", formData);
-    emit("addUser", res.data);
+    // const res = await axiosInstance.post("/users", formData);
+    emit("addUser", formData);
   } catch (error) {
     console.log(error);
   } finally {
